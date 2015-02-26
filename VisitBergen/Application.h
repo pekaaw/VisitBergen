@@ -10,19 +10,25 @@
 class Application
 {
 private:
-	EventManager eventManager;
-	ProcessManager processManager;
-	Renderer renderer;
+	std::shared_ptr<EventManager> eventManager;
+	std::shared_ptr<ProcessManager> processManager;
+	std::shared_ptr<Renderer> renderer;
+	//EventManager* eventManager;
+	//ProcessManager* processManager;
+	//Renderer* renderer;
 	
 	bool quit = 0;
-	//int preferredFPS = 60;
-	int preferredFPS = 1;
+	int preferredFPS = 60;
+
+	int windowWidht = 800;
+	int windowHeight = 600;
+	char* windowTitle = "Visit Bergen\0";
 
 public:
 	Application();
 	~Application();
 
-	int init();
+	int init(int* argc, char** argv);
 	int execute();
 	int shutdown();
 };

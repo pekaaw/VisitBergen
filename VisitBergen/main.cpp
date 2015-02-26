@@ -5,7 +5,7 @@ int main(int argc, char** argv)
 	Application application;
 	int exitCode = -1;
 
-	if (application.init())
+	if (application.init(&argc, argv))
 	{
 		exitCode = application.execute();
 	}
@@ -15,5 +15,7 @@ int main(int argc, char** argv)
 		exitCode = application.shutdown();
 	}
 	
+	std::getchar();
+
 	return exitCode;
 }

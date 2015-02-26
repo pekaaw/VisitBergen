@@ -1,4 +1,8 @@
 #pragma once
+
+#include <GL\glew.h>
+#include <glm\glm.hpp>
+
 #include "..\processManager\Process.h"
 #include "..\eventManager\EventListener.h"
 
@@ -13,5 +17,20 @@ public:
 	virtual void init(void);
 	virtual void update(unsigned long deltaMs);
 	virtual void handleEvent(const std::shared_ptr<Event>& event);
+
+	void display();
+
+
+private:
+	GLuint shaderProgram;
+	GLint uModelMatrix;
+	GLint uModelViewMatrix;
+	GLint uProjectionMatrix;
+
+	glm::mat4 modelMatrix;
+	glm::mat4 modelViewMatrix;
+	glm::mat4 projectionMatrix;
+
+	bool initShaders();
 };
 
