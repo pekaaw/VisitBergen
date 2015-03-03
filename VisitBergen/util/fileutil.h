@@ -7,7 +7,7 @@ inline std::string readTextFile(const std::string& pathAndFileName)
 	std::ifstream fileIn(pathAndFileName);
 	if (!fileIn.is_open())
 	{
-		printf("Error: Unable to open file $s\n", pathAndFileName.c_str());
+		printf("Error: Unable to open file %s\n", pathAndFileName.c_str());
 		return "";
 	}
 
