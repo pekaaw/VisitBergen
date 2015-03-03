@@ -4,10 +4,14 @@
 #include <cstdio>
 #include <thread>
 #include "eventManager\EventManager.h"
+#include "eventManager\EventListener.h"
 #include "processManager\ProcessManager.h"
 #include "renderer\Renderer.h"
 
-class Application
+#include "events\QuitApplication.h"
+
+class Application :
+	public EventListener
 {
 private:
 	std::shared_ptr<EventManager> eventManager;
@@ -23,6 +27,8 @@ private:
 	int windowWidht = 800;
 	int windowHeight = 600;
 	char* windowTitle = "Visit Bergen\0";
+
+	void handleEvent(const std::shared_ptr<Event>& event);
 
 public:
 	Application();

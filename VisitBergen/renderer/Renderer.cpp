@@ -2,6 +2,7 @@
 #include <vector>
 #include <assert.h>
 
+#include "../util/includeGL.h"
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
 
@@ -10,9 +11,10 @@
 
 Renderer::Renderer() :
 	shaderProgram(0),
-	uModelMatrix(0),
-	uModelViewMatrix(0),
-	uProjectionMatrix(0)
+	uModelMatrix(-1),
+	uModelViewMatrix(-1),
+	uProjectionMatrix(-1),
+	uTextureSampler(-1)
 {
 }
 
@@ -22,12 +24,35 @@ Renderer::~Renderer()
 
 void Renderer::init(void)
 {
-	std::printf("Hello from Renderer!\n");
+	this->Process::init();
+
+	this->modelMatrix = glm::mat4();
+	this->modelViewMatrix = glm::mat4();
+	this->projectionMatrix = glm::mat4();
+
 	initShaders();
+	/*todo: change name to initShaderProgram*/
+
+	// enable the shader program
+	assert(this->shaderProgram != 0);
+	glUseProgram(this->shaderProgram);
+
+	if (!this->car)
+	{
+		car = std::make_shared<ContainerOBJ>();
+	}
+
+	car->init("..\\VisitBergen\\assets\\car.obj");
+
+	glUseProgram(0);
+
+	// Set the clearcolor for the gl context
+	glClearColor(0.0f, 0.5f, 0.7f, 0.0f);
 }
 
 void Renderer::update(unsigned long deltaMs)
 {
+	this->display();
 	return;
 }
 
@@ -54,13 +79,41 @@ void Renderer::display()
 	glUseProgram(this->shaderProgram);
 
 
-	glm::mat4x4 modelMatrix;
-	glm::mat4x4 modelViewMatrix;
-	glm::mat4x4 projectionMatrix;
+	glUniformMatrix4fv(this->uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(this->modelViewMatrix));
+	glUniformMatrix4fv(this->uProjectionMatrix, 1, GL_FALSE, glm::value_ptr(this->projectionMatrix));
 
-	//glm::mat4x4 rotateX = glm::rotate()
+	// TODO: Do amazing stuff by rendering!
+	if (this->car)
+	{
+		glUniformMatrix4fv(this->uModelMatrix, 1, GL_FALSE, glm::value_ptr(this->car->getModelMatrix()));
+		this->car->draw();
+	}
+	
 
-	//glm::mat4x4 transform = glm::mat4x4() * 
+
+
+
+	glUseProgram(0);
+
+	// Swap frame buffers (off-screen rendering)
+	glutSwapBuffers();
+}
+
+std::shared_ptr<Renderer> Renderer::instance = nullptr;
+void Renderer::setInstance(std::shared_ptr<Renderer> renderer)
+{
+	instance = renderer;
+}
+
+void Renderer::displayCall()
+{
+	std::printf("Hello from Renderer::displayCall()\n");
+	instance->display();
+}
+
+GLuint const Renderer::getShaderProgram() const
+{
+	return this->shaderProgram;
 }
 
 bool Renderer::initShaders()
@@ -208,8 +261,9 @@ bool Renderer::initShaders()
 	this->uModelMatrix = glGetUniformLocation(this->shaderProgram, "ModelMatrix");
 	this->uModelViewMatrix = glGetUniformLocation(this->shaderProgram, "ModelViewMatrix");
 	this->uProjectionMatrix = glGetUniformLocation(this->shaderProgram, "ProjectionMatrix");
+	this->uTextureSampler = glGetUniformLocation(this->shaderProgram, "TextureSampler");
 
-	assert(this->uModelMatrix != -1 && this->uModelViewMatrix != -1 && this->uProjectionMatrix != -1);
+	assert(this->uModelMatrix != -1 && this->uModelViewMatrix != -1 && this->uProjectionMatrix != -1 && this->uTextureSampler != -1);
 
 	glUniformMatrix4fv(this->uModelMatrix, 1, GL_FALSE, glm::value_ptr(this->modelMatrix));
 	glUniformMatrix4fv(this->uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(this->modelViewMatrix));

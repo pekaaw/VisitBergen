@@ -1,9 +1,4 @@
-#pragma comment(lib, "opengl32")
-#pragma comment(lib, "glew32")
-
-#include "GL\glew.h"
-#include "GL\freeglut.h"
-#include "gl\GL.h"
+#include "util\includeGL.h"
 
 #include <iostream>
 
@@ -44,7 +39,7 @@ int Application::init(int* argc, char** argv)
 	glutInit(argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowSize(this->windowWidht, this->windowHeight);
-	glutInitWindowPosition(0, 0);
+	glutInitWindowPosition(1000, 0);
 	glutCreateWindow(this->windowTitle);
 
 	GLenum result = glewInit();
@@ -56,13 +51,15 @@ int Application::init(int* argc, char** argv)
 	}
 
 	this->renderer = std::make_shared<Renderer>();
-	this->renderer->init();
+	this->renderer->setInstance(this->renderer);
 
-	//glutDisplayFunc(nullptr);
+	//glutDisplayFunc(Renderer::displayCall);
 	//glutIdleFunc(nullptr);
 	//glutKeyboardFunc(nullptr);
 	//glutMouseFunc(nullptr);
 	//glutMotionFunc(nullptr);
+
+	//glutMainLoop();
 
 	return 1;
 }
@@ -77,6 +74,7 @@ int Application::execute()
 	timer->attachChild(testProcess);
 
 	this->processManager->attachProcess(timer);
+	this->processManager->attachProcess(this->renderer);
 
 	unsigned long duration;
 	unsigned long prefDuration = unsigned long (1000 / this->preferredFPS);
@@ -95,6 +93,9 @@ int Application::execute()
 			duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - prevTime).count();
 		}
 
+		glutMainLoopEvent();
+
+		this->eventManager->update();
 		this->processManager->updateProcesses(duration);
 		
 	}
@@ -116,4 +117,12 @@ int Application::shutdown()
 		- ... make sure a graceful exit will happen
 	*/
 	return 0;
+}
+
+void Application::handleEvent(const std::shared_ptr<Event>& event_)
+{
+	if (std::shared_ptr<QuitApplication> quitMe = std::dynamic_pointer_cast<QuitApplication>(event_))
+	{
+		quitMe->sayHallo();
+	}
 }
