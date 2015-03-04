@@ -76,7 +76,7 @@ int Application::execute()
 	// There is a bug in the addListener() method that cause an access violation on shutdown
 	// (after main has returned). I suspect it to be because Applications destructor has been
 	// called, but that the shared_ptr is still holding a pointer there.
-	std::shared_ptr<EventListener> thisListener(this);
+	std::shared_ptr<EventListener> thisListener(shared_from_this());
 	std::shared_ptr<Event> quitEvent = std::make_shared<QuitApplication>();
 	EventManager::getInstance()->addListener(thisListener, quitEvent);
 	//this->eventManager->addListener(thisListener, quitEvent);

@@ -12,7 +12,8 @@
 #include "events\QuitApplication.h"
 
 class Application :
-	public EventListener
+	public EventListener,
+	public std::enable_shared_from_this<Application>
 {
 private:
 	std::shared_ptr<EventManager> eventManager;
