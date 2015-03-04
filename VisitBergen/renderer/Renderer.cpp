@@ -42,7 +42,7 @@ void Renderer::init(void)
 		car = std::make_shared<ContainerOBJ>();
 	}
 
-	//car->init("assets\\car.obj");
+	car->init("assets\\cube\\cube.obj");
 
 	glUseProgram(0);
 
@@ -70,7 +70,7 @@ void Renderer::display()
 	glEnable(GL_DEPTH_TEST);
 
 	// Enable face culling
-	glFrontFace(GL_CW);
+	glFrontFace(GL_CCW);
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
 
@@ -86,7 +86,7 @@ void Renderer::display()
 	{
 		glUniform1i(this->uTextureSampler, 0);
 		glUniformMatrix4fv(this->uModelMatrix, 1, GL_FALSE, glm::value_ptr(this->car->getModelMatrix()));
-		//this->car->draw();
+		this->car->draw();
 	}
 	
 
