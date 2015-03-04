@@ -19,6 +19,9 @@ public:
 	EventManager();
 	~EventManager();
 
+	static std::shared_ptr<EventManager> getInstance();
+
+
 	/**
 	 * Make an instance start to listen for the given event type.
 	 */
@@ -43,12 +46,13 @@ public:
 	void update();
 
 private:
+	static std::shared_ptr<EventManager> instance;
+
 	typedef std::vector<std::shared_ptr<EventListener>> InstanceVector;
 
 	std::vector<std::shared_ptr<Event>> events;
 	std::map<TypeInfo, std::unique_ptr<InstanceVector>> listeners;
 };
-
 
 
 ///////////////////////////////////////////////////////////////////////////////

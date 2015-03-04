@@ -100,15 +100,14 @@ void Renderer::display()
 }
 
 std::shared_ptr<Renderer> Renderer::instance = nullptr;
-void Renderer::setInstance(std::shared_ptr<Renderer> renderer)
+const std::shared_ptr<Renderer> Renderer::getInstance(void)
 {
-	instance = renderer;
-}
+	if (Renderer::instance == nullptr)
+	{
+		Renderer::instance = std::make_shared<Renderer>();
+	}
 
-void Renderer::displayCall()
-{
-	std::printf("Hello from Renderer::displayCall()\n");
-	instance->display();
+	return Renderer::instance;
 }
 
 GLuint const Renderer::getShaderProgram() const

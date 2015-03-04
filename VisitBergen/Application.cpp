@@ -5,6 +5,7 @@
 #include "Application.h"
 #include "processes\Timer.h"
 #include "processes\TestProcess.h"
+#include "events\QuitApplication.h"
 
 
 Application::Application()
@@ -33,8 +34,11 @@ int Application::init(int* argc, char** argv)
 		- Preload selected resources from the resource cache
 	*/
 
-	this->eventManager = std::make_shared<EventManager>();
+	//this->eventManager = std::make_shared<EventManager>();
+
 	this->processManager = std::make_shared<ProcessManager>();
+	this->inputHandler = InputHandler::getInstance();
+	this->eventManager = EventManager::getInstance();
 
 	glutInit(argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
@@ -50,16 +54,11 @@ int Application::init(int* argc, char** argv)
 		return -1;
 	}
 
-	this->renderer = std::make_shared<Renderer>();
-	this->renderer->setInstance(this->renderer);
+	this->renderer = Renderer::getInstance();
 
-	//glutDisplayFunc(Renderer::displayCall);
-	//glutIdleFunc(nullptr);
-	//glutKeyboardFunc(nullptr);
-	//glutMouseFunc(nullptr);
-	//glutMotionFunc(nullptr);
-
-	//glutMainLoop();
+	glutKeyboardFunc(this->inputHandler->keyboardCall);
+	glutMouseFunc(this->inputHandler->mouseCall);
+	glutMotionFunc(this->inputHandler->motionCall);
 
 	return 1;
 }
@@ -75,6 +74,8 @@ int Application::execute()
 
 	this->processManager->attachProcess(timer);
 	this->processManager->attachProcess(this->renderer);
+
+	this->eventManager->addListener(std::shared_ptr<EventListener>(this), std::make_shared<QuitApplication>());
 
 	unsigned long duration;
 	unsigned long prefDuration = unsigned long (1000 / this->preferredFPS);
@@ -95,6 +96,7 @@ int Application::execute()
 
 		glutMainLoopEvent();
 
+		this->update();
 		this->eventManager->update();
 		this->processManager->updateProcesses(duration);
 		
@@ -124,5 +126,6 @@ void Application::handleEvent(const std::shared_ptr<Event>& event_)
 	if (std::shared_ptr<QuitApplication> quitMe = std::dynamic_pointer_cast<QuitApplication>(event_))
 	{
 		quitMe->sayHallo();
+		this->quit = true;
 	}
 }

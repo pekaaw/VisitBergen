@@ -1,8 +1,10 @@
 #include "InputHandler.h"
+#include "..\eventManager\EventManager.h"
+#include "..\events\QuitApplication.h"
 
 std::shared_ptr<InputHandler> InputHandler::instance = nullptr;
 
-std::shared_ptr<InputHandler> InputHandler::getInstance(void)
+const std::shared_ptr<InputHandler> InputHandler::getInstance(void)
 {
 	if (InputHandler::instance == nullptr)
 	{
@@ -33,7 +35,11 @@ void InputHandler::keyboard(unsigned char key, int x, int y)
 	switch (tolower(key))
 	{
 	case 'q':
+		//std::shared_ptr<Event> quit = std::make_shared<QuitApplication>();
+		//EventManager::getInstance()->fireEvent(quit);
+		EventManager::getInstance()->fireEvent(std::make_shared<QuitApplication>());
 		// create exit event;
+		printf("Quit!");
 		break;
 	}
 }

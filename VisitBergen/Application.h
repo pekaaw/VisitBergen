@@ -7,6 +7,7 @@
 #include "eventManager\EventListener.h"
 #include "processManager\ProcessManager.h"
 #include "renderer\Renderer.h"
+#include "inputHandler\InputHandler.h"
 
 #include "events\QuitApplication.h"
 
@@ -20,6 +21,7 @@ private:
 	//EventManager* eventManager;
 	//ProcessManager* processManager;
 	//Renderer* renderer;
+	std::shared_ptr<InputHandler> inputHandler;
 	
 	bool quit = 0;
 	int preferredFPS = 60;

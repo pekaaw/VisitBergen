@@ -135,7 +135,7 @@ bool ContainerOBJ::init(const char* modelObjPath)
 
 void ContainerOBJ::draw()
 {
-	GLint positionLocation = glGetAttribLocation(Renderer::instance->getShaderProgram(), "position");
+	GLint positionLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "position");
 	glEnableVertexAttribArray(positionLocation);
 	glVertexAttribPointer(positionLocation,
 		3,
@@ -144,7 +144,7 @@ void ContainerOBJ::draw()
 		sizeof(ModelOBJ::Vertex),
 		reinterpret_cast<const GLvoid*>(0));
 
-	GLint texCoordsLocation = glGetAttribLocation(Renderer::instance->getShaderProgram(), "tex_coords");
+	GLint texCoordsLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "tex_coords");
 	glEnableVertexAttribArray(texCoordsLocation);
 	glVertexAttribPointer(texCoordsLocation,
 		2,

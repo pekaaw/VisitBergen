@@ -31,3 +31,17 @@ void EventManager::update()
 		this->events.pop_back();
 	}
 }
+
+///////////////////////////////////////////////////////////////////////////////
+///   EventManager Singleton Instance Getter //////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+std::shared_ptr<EventManager> EventManager::instance = nullptr;
+std::shared_ptr<EventManager> EventManager::getInstance()
+{
+	if (EventManager::instance == nullptr)
+	{
+		EventManager::instance = std::make_shared<EventManager>();
+	}
+
+	return EventManager::instance;
+}

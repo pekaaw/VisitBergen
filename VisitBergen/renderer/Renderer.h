@@ -23,9 +23,7 @@ public:
 
 	void display();
 
-	static std::shared_ptr<Renderer> instance;
-	static void setInstance(std::shared_ptr<Renderer> renderer);
-	static void displayCall();
+	static const std::shared_ptr<Renderer> getInstance(void) ;
 
 	GLuint const getShaderProgram() const;
 
@@ -45,5 +43,6 @@ private:
 	/* test with mesh */
 	std::shared_ptr<ContainerOBJ> car;
 
+	static std::shared_ptr<Renderer> instance;
 };
 
