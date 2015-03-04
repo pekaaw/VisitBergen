@@ -34,8 +34,6 @@ int Application::init(int* argc, char** argv)
 		- Preload selected resources from the resource cache
 	*/
 
-	//this->eventManager = std::make_shared<EventManager>();
-
 	this->processManager = std::make_shared<ProcessManager>();
 	this->inputHandler = InputHandler::getInstance();
 	this->eventManager = EventManager::getInstance();
@@ -75,7 +73,13 @@ int Application::execute()
 	this->processManager->attachProcess(timer);
 	this->processManager->attachProcess(this->renderer);
 
-	this->eventManager->addListener(std::shared_ptr<EventListener>(this), std::make_shared<QuitApplication>());
+	// There is a bug in the addListener() method that cause an access violation on shutdown
+	// (after main has returned). I suspect it to be because Applications destructor has been
+	// called, but that the shared_ptr is still holding a pointer there.
+	std::shared_ptr<EventListener> thisListener(this);
+	std::shared_ptr<Event> quitEvent = std::make_shared<QuitApplication>();
+	EventManager::getInstance()->addListener(thisListener, quitEvent);
+	//this->eventManager->addListener(thisListener, quitEvent);
 
 	unsigned long duration;
 	unsigned long prefDuration = unsigned long (1000 / this->preferredFPS);
@@ -99,7 +103,7 @@ int Application::execute()
 		this->update();
 		this->eventManager->update();
 		this->processManager->updateProcesses(duration);
-		
+
 	}
 
 	return 0;
@@ -118,6 +122,12 @@ int Application::shutdown()
 		- Shutdown resource cache
 		- ... make sure a graceful exit will happen
 	*/
+
+	this->renderer.reset();
+	this->eventManager.reset();
+	this->inputHandler.reset();
+	this->processManager.reset();
+
 	return 0;
 }
 

@@ -7,8 +7,7 @@
 
 ContainerOBJ::ContainerOBJ() :
 vertexBufferObject(0),
-indexBufferObject(0),
-textureObject(0)
+indexBufferObject(0)
 {
 	this->model.reset();
 	this->modelMatrix = glm::mat4();
@@ -17,7 +16,35 @@ textureObject(0)
 }
 
 ContainerOBJ::~ContainerOBJ()
-{}
+{
+	// Delete vertex buffer object
+	if (glIsBuffer(this->vertexBufferObject))
+	{
+		glDeleteBuffers(1, &this->vertexBufferObject);
+	}
+
+	// Delete index buffer object
+	if (glIsBuffer(this->indexBufferObject))
+	{
+		glDeleteBuffers(1, &this->indexBufferObject);
+	}
+
+	// delete all textures
+	for (auto it = this->textureObjects.begin(); it != this->textureObjects.end(); ++it)
+	{
+		GLuint texture = it->second;
+		if (glIsTexture(texture))
+		{
+			glDeleteTextures(1, &texture);
+		}
+	}
+
+	// clear the map with textures
+	this->textureObjects.clear();
+
+	// release the model
+	this->model.reset();
+}
 
 bool ContainerOBJ::init(const char* modelObjPath)
 {

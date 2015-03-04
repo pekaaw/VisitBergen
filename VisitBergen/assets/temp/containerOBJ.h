@@ -26,7 +26,5 @@ private:
 
 	glm::mat4 modelMatrix;
 
-	GLuint textureObject;
-
 	std::unordered_map<std::string, GLuint> textureObjects;
 };

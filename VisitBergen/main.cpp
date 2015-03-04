@@ -2,20 +2,21 @@
 
 int main(int argc, char** argv)
 {
-	Application application;
+	std::shared_ptr<Application> application = std::make_shared<Application>();
+//	Application application;
 	int exitCode = -1;
 
-	if (application.init(&argc, argv))
+	if (application->init(&argc, argv))
 	{
-		exitCode = application.execute();
+		exitCode = application->execute();
 	}
 
 	if (exitCode == 0)
 	{
-		exitCode = application.shutdown();
+		exitCode = application->shutdown();
 	}
-	
-	std::getchar();
 
+	application.reset();
+	
 	return exitCode;
 }

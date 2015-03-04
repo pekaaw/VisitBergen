@@ -39,7 +39,7 @@ void InputHandler::keyboard(unsigned char key, int x, int y)
 		//EventManager::getInstance()->fireEvent(quit);
 		EventManager::getInstance()->fireEvent(std::make_shared<QuitApplication>());
 		// create exit event;
-		printf("Quit!");
+		printf("Quit!\n");
 		break;
 	}
 }

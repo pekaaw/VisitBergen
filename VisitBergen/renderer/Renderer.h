@@ -27,6 +27,9 @@ public:
 
 	GLuint const getShaderProgram() const;
 
+protected:
+	virtual void onAbort();
+
 private:
 	GLuint shaderProgram;
 	GLint uModelMatrix;

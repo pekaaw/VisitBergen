@@ -42,7 +42,7 @@ void Renderer::init(void)
 		car = std::make_shared<ContainerOBJ>();
 	}
 
-	car->init("assets\\car.obj");
+	//car->init("assets\\car.obj");
 
 	glUseProgram(0);
 
@@ -86,7 +86,7 @@ void Renderer::display()
 	{
 		glUniform1i(this->uTextureSampler, 0);
 		glUniformMatrix4fv(this->uModelMatrix, 1, GL_FALSE, glm::value_ptr(this->car->getModelMatrix()));
-		this->car->draw();
+		//this->car->draw();
 	}
 	
 
@@ -218,7 +218,7 @@ bool Renderer::initShaders()
 		glGetProgramiv(this->shaderProgram, GL_INFO_LOG_LENGTH, &infoLength);
 		std::vector<GLchar> errorLog(infoLength);
 		glGetProgramInfoLog(this->shaderProgram, infoLength, &infoLength, errorLog.data());
-		
+
 		// Construct string and output error
 		std::string errorInfoLog(errorLog.begin(), errorLog.end());
 		printf("Error compiling fragment shader: \n %s \n", errorInfoLog.c_str());
@@ -270,4 +270,17 @@ bool Renderer::initShaders()
 
 	// Initialization finished successfully!
 	return true;
+}
+
+void Renderer::onAbort()
+{
+	// Release the car object (call destructor if no one else is using it
+	this->car.reset();
+
+	// delete the program
+	if (glIsProgram(this->shaderProgram))
+	{
+		glDeleteProgram(this->shaderProgram);
+	}
+
 }

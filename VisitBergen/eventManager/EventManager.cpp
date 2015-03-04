@@ -6,6 +6,21 @@ EventManager::EventManager()
 
 EventManager::~EventManager()
 {
+	// release all the remaining events;
+	for (auto it = this->events.begin(); it != this->events.end(); ++it)
+	{
+		it->reset();
+	}
+
+	// for all types of events
+	for (auto it = this->listeners.begin(); it != this->listeners.end(); ++it)
+	{
+		// release all listeners
+		for (auto itt = it->second->begin(); itt != it->second->end(); ++itt)
+		{
+			itt->reset();
+		}
+	}
 }
 
 void EventManager::update()
