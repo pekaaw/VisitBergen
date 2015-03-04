@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <vector>
+#include <unordered_map>
 
 #include <glm\glm.hpp>
 
@@ -28,5 +28,5 @@ private:
 
 	GLuint textureObject;
 
-	std::vector<GLuint> textureObjects;
+	std::unordered_map<std::string, GLuint> textureObjects;
 };

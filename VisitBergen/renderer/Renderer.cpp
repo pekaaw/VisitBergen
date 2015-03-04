@@ -42,7 +42,7 @@ void Renderer::init(void)
 		car = std::make_shared<ContainerOBJ>();
 	}
 
-	car->init("..\\VisitBergen\\assets\\car.obj");
+	car->init("assets\\car.obj");
 
 	glUseProgram(0);
 
@@ -70,7 +70,7 @@ void Renderer::display()
 	glEnable(GL_DEPTH_TEST);
 
 	// Enable face culling
-	glFrontFace(GL_CCW);
+	glFrontFace(GL_CW);
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
 
@@ -78,13 +78,13 @@ void Renderer::display()
 	assert(this->shaderProgram != 0);
 	glUseProgram(this->shaderProgram);
 
-
 	glUniformMatrix4fv(this->uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(this->modelViewMatrix));
 	glUniformMatrix4fv(this->uProjectionMatrix, 1, GL_FALSE, glm::value_ptr(this->projectionMatrix));
 
 	// TODO: Do amazing stuff by rendering!
 	if (this->car)
 	{
+		glUniform1i(this->uTextureSampler, 0);
 		glUniformMatrix4fv(this->uModelMatrix, 1, GL_FALSE, glm::value_ptr(this->car->getModelMatrix()));
 		this->car->draw();
 	}
@@ -173,13 +173,13 @@ bool Renderer::initShaders()
 		GLint infoLength = 0;
 		glGetShaderiv(vertShader, GL_INFO_LOG_LENGTH, &infoLength);
 		std::vector<GLchar> errorLog(infoLength);
-		glGetShaderInfoLog(vertShader, infoLength, &infoLength, &errorLog[0]);
+		glGetShaderInfoLog(vertShader, infoLength, &infoLength, errorLog.data());
 
 		// Construct string and output error
 		std::string errorInfoLog(errorLog.begin(), errorLog.end());
 		printf("Error compiling vertex shader:\n %s \n", errorInfoLog.c_str());
 
-		// Don't lead shaders
+		// Don't leak shaders
 		glDeleteShader(vertShader);
 		glDeleteShader(fragShader);
 
@@ -193,13 +193,13 @@ bool Renderer::initShaders()
 		GLint infoLength = 0;
 		glGetShaderiv(fragShader, GL_INFO_LOG_LENGTH, &infoLength);
 		std::vector<GLchar> errorLog(infoLength);
-		glGetShaderInfoLog(fragShader, infoLength, &infoLength, &errorLog[0]);
+		glGetShaderInfoLog(fragShader, infoLength, &infoLength, errorLog.data());
 
 		// Construct string and output error
 		std::string errorInfoLog(errorLog.begin(), errorLog.end());
 		printf("Error compiling fragment shader:\n %s \n", errorInfoLog.c_str());
 
-		// Don't lead shaders
+		// Don't leak shaders
 		glDeleteShader(vertShader);
 		glDeleteShader(fragShader);
 
@@ -218,7 +218,7 @@ bool Renderer::initShaders()
 		GLint infoLength = 0;
 		glGetProgramiv(this->shaderProgram, GL_INFO_LOG_LENGTH, &infoLength);
 		std::vector<GLchar> errorLog(infoLength);
-		glGetProgramInfoLog(this->shaderProgram, infoLength, &infoLength, &errorLog[0]);
+		glGetProgramInfoLog(this->shaderProgram, infoLength, &infoLength, errorLog.data());
 		
 		// Construct string and output error
 		std::string errorInfoLog(errorLog.begin(), errorLog.end());
@@ -250,7 +250,7 @@ bool Renderer::initShaders()
 		GLint infoLength = 0;
 		glGetProgramiv(this->shaderProgram, GL_INFO_LOG_LENGTH, &infoLength);
 		std::vector<GLchar> errorLog(infoLength);
-		glGetProgramInfoLog(this->shaderProgram, infoLength, &infoLength, &errorLog[0]);
+		glGetProgramInfoLog(this->shaderProgram, infoLength, &infoLength, errorLog.data());
 
 		// Construct string and output error
 		std::string errorInfoLog(errorLog.begin(), errorLog.end());

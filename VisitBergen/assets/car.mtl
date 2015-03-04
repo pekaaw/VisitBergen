@@ -27,7 +27,7 @@ Ks 0.500000 0.500000 0.500000
 Ni -1.000000
 d 1.000000
 illum 2
-map_Kd car/texture.png
+map_Kd assets\\car\\texture.png
 
 newmtl material_10
 Ns 96.078431
@@ -37,7 +37,7 @@ Ks 0.500000 0.500000 0.500000
 Ni -1.000000
 d 1.000000
 illum 2
-map_Kd car/texture_4.png
+map_Kd assets\\car\\texture_4.png
 
 newmtl material_11
 Ns 96.078431
@@ -47,7 +47,7 @@ Ks 0.500000 0.500000 0.500000
 Ni -1.000000
 d 1.000000
 illum 2
-map_Kd car/texture_5.png
+map_Kd assets\\car\\texture_5.png
 
 newmtl material_12
 Ns 96.078431
@@ -57,7 +57,7 @@ Ks 0.500000 0.500000 0.500000
 Ni -1.000000
 d 1.000000
 illum 2
-map_Kd car/texture_6.png
+map_Kd assets\\car\\texture_6.png
 
 newmtl material_13
 Ns 96.078431
@@ -67,7 +67,7 @@ Ks 0.500000 0.500000 0.500000
 Ni -1.000000
 d 1.000000
 illum 2
-map_Kd car/texture_4.png
+map_Kd assets\\car\\texture_4.png
 
 newmtl material_2
 Ns 96.078431
@@ -86,7 +86,7 @@ Ks 0.500000 0.500000 0.500000
 Ni -1.000000
 d 1.000000
 illum 2
-map_Kd car/texture_0.png
+map_Kd assets\\car\\texture_0.png
 
 newmtl material_4
 Ns 96.078431
@@ -123,7 +123,7 @@ Ks 0.500000 0.500000 0.500000
 Ni -1.000000
 d 1.000000
 illum 2
-map_Kd car/texture_1.png
+map_Kd assets\\car\\texture_1.png
 
 newmtl material_8
 Ns 96.078431
@@ -133,7 +133,7 @@ Ks 0.500000 0.500000 0.500000
 Ni -1.000000
 d 1.000000
 illum 2
-map_Kd car/texture_2.png
+map_Kd assets\\car\\texture_2.png
 
 newmtl material_9
 Ns 96.078431
@@ -143,4 +143,4 @@ Ks 0.500000 0.500000 0.500000
 Ni -1.000000
 d 1.000000
 illum 2
-map_Kd car/texture_3.png
+map_Kd assets\\car\\texture_3.png
