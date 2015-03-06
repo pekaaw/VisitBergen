@@ -27,8 +27,6 @@ private:
 	bool quit = 0;
 	int preferredFPS = 60;
 
-	int windowWidht = 800;
-	int windowHeight = 600;
 	char* windowTitle = "Visit Bergen\0";
 
 	void handleEvent(const std::shared_ptr<Event>& event);

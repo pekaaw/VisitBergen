@@ -17,6 +17,7 @@ int main(int argc, char** argv)
 	}
 
 	application.reset();
-	
+
+	printf("Leaving main. Goodbye.");
 	return exitCode;
 }

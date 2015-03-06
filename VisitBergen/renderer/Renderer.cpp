@@ -2,19 +2,25 @@
 #include <vector>
 #include <assert.h>
 
-#include "../util/includeGL.h"
+#include "..\util\includeGL.h"
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
 
 #include "Renderer.h"
-#include "../util/fileutil.h"
+#include "..\util\fileutil.h"
+#include "..\events\EventCameraTransform.h"
+#include "..\events\EventToggleProjectionMode.h"
+#include "..\events\EventCameraZoom.h"
 
 Renderer::Renderer() :
 	shaderProgram(0),
 	uModelMatrix(-1),
 	uModelViewMatrix(-1),
 	uProjectionMatrix(-1),
-	uTextureSampler(-1)
+	uTextureSampler(-1),
+	usePerspectiveMode(true),
+	windowWidth(800),
+	windowHeight(600)
 {
 }
 
@@ -30,6 +36,12 @@ void Renderer::init(void)
 	this->modelViewMatrix = glm::mat4();
 	this->projectionMatrix = glm::mat4();
 
+	glm::vec3 eyePosition = glm::vec3(0.0f, 0.0f, 1.0f);
+	glm::vec3 target = glm::vec3(0.0f);
+	glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	this->modelViewMatrix *= glm::lookAt(eyePosition, target, upVector);
+
 	initShaders();
 	/*todo: change name to initShaderProgram*/
 
@@ -42,23 +54,50 @@ void Renderer::init(void)
 		car = std::make_shared<ContainerOBJ>();
 	}
 
-	car->init("assets\\cube\\cube.obj");
+	car->init("assets\\car.obj");
 
 	glUseProgram(0);
 
 	// Set the clearcolor for the gl context
 	glClearColor(0.0f, 0.5f, 0.7f, 0.0f);
+
+	//setProjectionMode();
 }
 
 void Renderer::update(unsigned long deltaMs)
 {
+	this->EventListener::update();
 	this->display();
 	return;
 }
 
-void Renderer::handleEvent(const std::shared_ptr<Event>& event)
+void Renderer::handleEvent(const std::shared_ptr<Event>& event_)
 {
-	return;
+	if (std::shared_ptr<EventCameraTransform> transformEvent = std::dynamic_pointer_cast<EventCameraTransform>(event_))
+	{
+		this->modelViewMatrix *= transformEvent->getTransform();
+	}
+
+	if (std::shared_ptr<EventToggleProjectionMode> projectionEvent = std::dynamic_pointer_cast<EventToggleProjectionMode>(event_))
+	{
+		this->usePerspectiveMode = !this->usePerspectiveMode;
+
+		if (this->usePerspectiveMode)
+		{
+			setProjectionMode(PERSPECTIVE);
+		}
+		else
+		{
+			setProjectionMode(ORTHOGRAPHIC);
+		}
+	}
+
+	if (std::shared_ptr<EventCameraZoom> zoomEvent = std::dynamic_pointer_cast<EventCameraZoom>(event_))
+	{
+		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(zoomEvent->getZoom()));
+		this->modelViewMatrix *= scale;
+		printf("Renderer::handleEvent(EventCameraZoom(%f))\n", zoomEvent->getZoom());
+	}
 }
 
 void Renderer::display()
@@ -113,6 +152,16 @@ const std::shared_ptr<Renderer> Renderer::getInstance(void)
 GLuint const Renderer::getShaderProgram() const
 {
 	return this->shaderProgram;
+}
+
+int const Renderer::getWindowWidth() const
+{
+	return this->windowWidth;
+}
+
+int const Renderer::getWindowHeight() const
+{
+	return this->windowHeight;
 }
 
 bool Renderer::initShaders()
@@ -270,6 +319,22 @@ bool Renderer::initShaders()
 
 	// Initialization finished successfully!
 	return true;
+}
+
+void Renderer::setProjectionMode(Renderer::ProjectionMode mode)
+{
+	switch (mode)
+	{
+	default:
+	case PERSPECTIVE:
+		this->projectionMatrix = glm::perspective(45.0f, float(this->windowWidth) / this->windowWidth, 0.1f, 100.0f);
+		break;
+	case ORTHOGRAPHIC:
+		float width = float(this->windowWidth) / 200;
+		float height = float(this->windowHeight) / 200;
+		this->projectionMatrix = glm::ortho(-0.5f, 0.5f, -0.5f, 0.5f, 0.1f, 100.0f);
+		break;
+	}
 }
 
 void Renderer::onAbort()

@@ -6,6 +6,9 @@
 #include "processes\Timer.h"
 #include "processes\TestProcess.h"
 #include "events\QuitApplication.h"
+#include "events\EventCameraTransform.h"
+#include "events\EventToggleProjectionMode.h"
+#include "events\EventCameraZoom.h"
 
 
 Application::Application()
@@ -37,10 +40,11 @@ int Application::init(int* argc, char** argv)
 	this->processManager = std::make_shared<ProcessManager>();
 	this->inputHandler = InputHandler::getInstance();
 	this->eventManager = EventManager::getInstance();
+	this->renderer = Renderer::getInstance();
 
 	glutInit(argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowSize(this->windowWidht, this->windowHeight);
+	glutInitWindowSize(this->renderer->getWindowWidth(), this->renderer->getWindowHeight());
 	glutInitWindowPosition(1000, 0);
 	glutCreateWindow(this->windowTitle);
 
@@ -52,10 +56,10 @@ int Application::init(int* argc, char** argv)
 		return -1;
 	}
 
-	this->renderer = Renderer::getInstance();
 
 	glutKeyboardFunc(this->inputHandler->keyboardCall);
 	glutMouseFunc(this->inputHandler->mouseCall);
+	glutMouseWheelFunc(this->inputHandler->mouseWheelCall);
 	glutMotionFunc(this->inputHandler->motionCall);
 
 	return 1;
@@ -73,13 +77,10 @@ int Application::execute()
 	this->processManager->attachProcess(timer);
 	this->processManager->attachProcess(this->renderer);
 
-	// There is a bug in the addListener() method that cause an access violation on shutdown
-	// (after main has returned). I suspect it to be because Applications destructor has been
-	// called, but that the shared_ptr is still holding a pointer there.
-	std::shared_ptr<EventListener> thisListener(shared_from_this());
-	std::shared_ptr<Event> quitEvent = std::make_shared<QuitApplication>();
-	EventManager::getInstance()->addListener(thisListener, quitEvent);
-	//this->eventManager->addListener(thisListener, quitEvent);
+	this->eventManager->addListener(shared_from_this(), std::make_shared<QuitApplication>());
+	this->eventManager->addListener(this->renderer, std::make_shared<EventCameraTransform>());
+	this->eventManager->addListener(this->renderer, std::make_shared<EventToggleProjectionMode>());
+	this->eventManager->addListener(this->renderer, std::make_shared<EventCameraZoom>(0));
 
 	unsigned long duration;
 	unsigned long prefDuration = unsigned long (1000 / this->preferredFPS);
@@ -106,6 +107,7 @@ int Application::execute()
 
 	}
 
+	printf("Exit Application::execute()\n");
 	return 0;
 }
 
@@ -123,9 +125,16 @@ int Application::shutdown()
 		- ... make sure a graceful exit will happen
 	*/
 
+	printf("Shutdown renderer...\n");
 	this->renderer.reset();
+
+	printf("Shutdown EventManager...\n");
 	this->eventManager.reset();
+
+	printf("Shutdown InputHandler...\n");
 	this->inputHandler.reset();
+
+	printf("Shutdown ProcessManager...\n");
 	this->processManager.reset();
 
 	return 0;
