@@ -5,6 +5,7 @@
 #include "..\util\includeGL.h"
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
+#include <glm\gtc\matrix_inverse.hpp>
 
 #include "Renderer.h"
 #include "..\util\fileutil.h"
@@ -15,7 +16,7 @@
 Renderer::Renderer() :
 	shaderProgram(0),
 	uModelMatrix(-1),
-	uModelViewMatrix(-1),
+	uViewMatrix(-1),
 	uProjectionMatrix(-1),
 	uTextureSampler(-1),
 	usePerspectiveMode(true),
@@ -33,14 +34,18 @@ void Renderer::init(void)
 	this->Process::init();
 
 	this->modelMatrix = glm::mat4();
-	this->modelViewMatrix = glm::mat4();
+	this->viewMatrix = glm::mat4();
 	this->projectionMatrix = glm::mat4();
+
+	this->cameraPosition = glm::vec3(0.0f, 0.0f, 1.0f);
+	this->cameraCenter = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->cameraUpVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	glm::vec3 eyePosition = glm::vec3(0.0f, 0.0f, 1.0f);
 	glm::vec3 target = glm::vec3(0.0f);
 	glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	this->modelViewMatrix *= glm::lookAt(eyePosition, target, upVector);
+	this->viewMatrix *= glm::lookAt(this->cameraPosition, this->cameraCenter, this->cameraUpVector);
 
 	initShaders();
 	/*todo: change name to initShaderProgram*/
@@ -55,13 +60,24 @@ void Renderer::init(void)
 	}
 
 	car->init("assets\\car.obj");
+	car->init("assets\\cube\\cube.obj");
 
 	glUseProgram(0);
 
 	// Set the clearcolor for the gl context
 	glClearColor(0.0f, 0.5f, 0.7f, 0.0f);
 
-	//setProjectionMode();
+	setProjectionMode(PERSPECTIVE);
+
+	// setup for Directional Light
+	glUniform3fv(this->dirLight.uDirection, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, -1.0f)));
+	glUniform3fv(this->dirLight.uAmbientColor, 1, glm::value_ptr(glm::vec3(0.0f, 1.0f, 1.0f)));
+	glUniform3fv(this->dirLight.uDiffuseColor, 1, glm::value_ptr(glm::vec3(0.0f, 1.0f, 1.0f)));
+	glUniform3fv(this->dirLight.uSpecularColor, 1, glm::value_ptr(glm::vec3(0.0f, 1.0f, 1.0f)));
+	glUniform1f(this->dirLight.uAmbientIntensity, 0.2f);
+	glUniform1f(this->dirLight.uDiffuseIntensity, 0.3f);
+	glUniform1f(this->dirLight.uSpecularIntensity, 0.2f);
+	
 }
 
 void Renderer::update(unsigned long deltaMs)
@@ -75,7 +91,7 @@ void Renderer::handleEvent(const std::shared_ptr<Event>& event_)
 {
 	if (std::shared_ptr<EventCameraTransform> transformEvent = std::dynamic_pointer_cast<EventCameraTransform>(event_))
 	{
-		this->modelViewMatrix *= transformEvent->getTransform();
+		this->viewMatrix *= transformEvent->getTransform();
 	}
 
 	if (std::shared_ptr<EventToggleProjectionMode> projectionEvent = std::dynamic_pointer_cast<EventToggleProjectionMode>(event_))
@@ -95,7 +111,7 @@ void Renderer::handleEvent(const std::shared_ptr<Event>& event_)
 	if (std::shared_ptr<EventCameraZoom> zoomEvent = std::dynamic_pointer_cast<EventCameraZoom>(event_))
 	{
 		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(zoomEvent->getZoom()));
-		this->modelViewMatrix *= scale;
+		this->viewMatrix *= scale;
 		printf("Renderer::handleEvent(EventCameraZoom(%f))\n", zoomEvent->getZoom());
 	}
 }
@@ -117,8 +133,11 @@ void Renderer::display()
 	assert(this->shaderProgram != 0);
 	glUseProgram(this->shaderProgram);
 
-	glUniformMatrix4fv(this->uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(this->modelViewMatrix));
+	glUniformMatrix4fv(this->uViewMatrix, 1, GL_FALSE, glm::value_ptr(this->viewMatrix));
 	glUniformMatrix4fv(this->uProjectionMatrix, 1, GL_FALSE, glm::value_ptr(this->projectionMatrix));
+	this->normalMatrix = glm::inverseTranspose(glm::mat3(this->viewMatrix));
+	glUniformMatrix3fv(this->uNormalMatrix, 1, GL_FALSE, glm::value_ptr(this->normalMatrix));
+	glUniformMatrix3fv(this->uCameraPosition, 1, GL_FALSE, glm::value_ptr(this->cameraPosition));
 
 	// TODO: Do amazing stuff by rendering!
 	if (this->car)
@@ -307,15 +326,27 @@ bool Renderer::initShaders()
 
 	// Get uniform locations
 	this->uModelMatrix = glGetUniformLocation(this->shaderProgram, "ModelMatrix");
-	this->uModelViewMatrix = glGetUniformLocation(this->shaderProgram, "ModelViewMatrix");
+	this->uViewMatrix = glGetUniformLocation(this->shaderProgram, "ViewMatrix");
 	this->uProjectionMatrix = glGetUniformLocation(this->shaderProgram, "ProjectionMatrix");
+	this->uNormalMatrix = glGetUniformLocation(this->shaderProgram, "NormalMatrix");
+	this->uCameraPosition = glGetUniformLocation(this->shaderProgram, "CameraPosition");
 	this->uTextureSampler = glGetUniformLocation(this->shaderProgram, "TextureSampler");
 
-	assert(this->uModelMatrix != -1 && this->uModelViewMatrix != -1 && this->uProjectionMatrix != -1 && this->uTextureSampler != -1);
+	// get uniform locations for light
+	this->dirLight.uDirection = glGetUniformLocation(this->shaderProgram, "DirectionalLightDirection");
+	this->dirLight.uAmbientColor = glGetUniformLocation(this->shaderProgram, "DirectionalLightAmbientColor");
+	this->dirLight.uDiffuseColor = glGetUniformLocation(this->shaderProgram, "DirectionalLightDiffuseColor");
+	this->dirLight.uSpecularColor = glGetUniformLocation(this->shaderProgram, "DirectionalLightSpecularColor");
+	this->dirLight.uAmbientIntensity = glGetUniformLocation(this->shaderProgram, "DirectionalLightAmbientIntensity");
+	this->dirLight.uDiffuseIntensity = glGetUniformLocation(this->shaderProgram, "DirectionalLightDiffuseIntentsity");
+	this->dirLight.uSpecularIntensity = glGetUniformLocation(this->shaderProgram, "DirectionalLightSpecularIntensity");
+
+	assert(this->uModelMatrix != -1 && this->uViewMatrix != -1 && this->uProjectionMatrix != -1 && this->uTextureSampler != -1);
 
 	glUniformMatrix4fv(this->uModelMatrix, 1, GL_FALSE, glm::value_ptr(this->modelMatrix));
-	glUniformMatrix4fv(this->uModelViewMatrix, 1, GL_FALSE, glm::value_ptr(this->modelViewMatrix));
+	glUniformMatrix4fv(this->uViewMatrix, 1, GL_FALSE, glm::value_ptr(this->viewMatrix));
 	glUniformMatrix4fv(this->uProjectionMatrix, 1, GL_FALSE, glm::value_ptr(this->projectionMatrix));
+	glUniformMatrix3fv(this->uNormalMatrix, 1, GL_FALSE, glm::value_ptr(this->normalMatrix));
 
 	// Initialization finished successfully!
 	return true;
@@ -330,9 +361,8 @@ void Renderer::setProjectionMode(Renderer::ProjectionMode mode)
 		this->projectionMatrix = glm::perspective(45.0f, float(this->windowWidth) / this->windowWidth, 0.1f, 100.0f);
 		break;
 	case ORTHOGRAPHIC:
-		float width = float(this->windowWidth) / 200;
-		float height = float(this->windowHeight) / 200;
-		this->projectionMatrix = glm::ortho(-0.5f, 0.5f, -0.5f, 0.5f, 0.1f, 100.0f);
+		float height = float(this->windowHeight) / float(this->windowWidth) * 0.5f;
+		this->projectionMatrix = glm::ortho(-0.5f, 0.5f, -height, height, 0.1f, 100.0f);
 		break;
 	}
 }

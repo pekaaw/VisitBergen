@@ -83,10 +83,23 @@ void InputHandler::motion(int x, int y)
 	{
 		glm::mat4 rx, ry;
 		rx = glm::rotate(rx, -0.001f * (this->mouseY - y), glm::vec3(1.0f, 0.0f, 0.0f));
-		ry = glm::rotate(ry, 0.001f * (this->mouseX - x), glm::vec3(0.0f, 1.0f, 0.0f));
+		ry = glm::rotate(ry, -0.001f * (this->mouseX - x), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		std::shared_ptr<EventCameraTransform> cameraTransform = std::make_shared<EventCameraTransform>();
 		cameraTransform->setTransform(rx * ry);
+
+		EventManager::getInstance()->fireEvent(cameraTransform);
+	}
+
+	if (this->mouseButton == GLUT_RIGHT_BUTTON)
+	{
+		glm::mat4 translate;
+		glm::vec3 direction;
+		direction.x = -0.001 * (this->mouseX - x);
+		direction.y = 0.001 * (this->mouseY - y);
+		translate = glm::translate(translate, direction);
+		std::shared_ptr<EventCameraTransform> cameraTransform = std::make_shared<EventCameraTransform>();
+		cameraTransform->setTransform(translate);
 
 		EventManager::getInstance()->fireEvent(cameraTransform);
 	}

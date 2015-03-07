@@ -8,6 +8,7 @@
 
 /* test with mesh */
 #include "..\assets\temp\ContainerOBJ.h"
+#include "..\util\LightSpecifictions.h"
 
 class Renderer :
 	public Process,
@@ -42,13 +43,23 @@ protected:
 private:
 	GLuint shaderProgram;
 	GLint uModelMatrix;
-	GLint uModelViewMatrix;
+	GLint uViewMatrix;
 	GLint uProjectionMatrix;
+	GLint uNormalMatrix;
 	GLint uTextureSampler;
+	GLint uCameraPosition;
+
+	DirectionalLight dirLight;
 
 	glm::mat4 modelMatrix;
-	glm::mat4 modelViewMatrix;
+	glm::mat4 viewMatrix;
 	glm::mat4 projectionMatrix;
+	glm::mat3 normalMatrix;
+
+	glm::vec3 cameraPosition;
+	glm::vec3 cameraCenter;
+	glm::vec3 cameraUpVector;
+
 
 	bool usePerspectiveMode;
 

@@ -7,7 +7,8 @@
 
 ContainerOBJ::ContainerOBJ() :
 vertexBufferObject(0),
-indexBufferObject(0)
+indexBufferObject(0),
+uMaterial(0)
 {
 	this->model.reset();
 	this->modelMatrix = glm::mat4();
@@ -70,13 +71,6 @@ bool ContainerOBJ::init(const char* modelObjPath)
 		GL_STATIC_DRAW);
 
 	// Generate buffer and fill with indices
-	//glGenBuffers(1, &this->indexBufferObject);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexBufferObject);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-	//	3 * this->model->getNumberOfTriangles() * sizeof(int),
-	//	this->model->getIndexBuffer(),
-	//	GL_STATIC_DRAW);	
-	
 	glGenBuffers(1, &this->indexBufferObject);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexBufferObject);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
@@ -84,11 +78,17 @@ bool ContainerOBJ::init(const char* modelObjPath)
 		this->model->getIndexBuffer(),
 		GL_STATIC_DRAW);
 
+	GLuint program = Renderer::getInstance()->getShaderProgram();
+	//this->uMaterial.uAmbient = glGetUniformLocation(program, "MaterialAmbientColor");
+	//this->uMaterial.uDiffuse = glGetUniformLocation(program, "MaterialDiffuseColor");
+	//this->uMaterial.uSpecular = glGetUniformLocation(program, "MaterialSpecularColor");
+	//this->uMaterial.uShininess = glGetUniformLocation(program, "MaterialShininess");
+	//this->uMaterial.uAlpha = glGetUniformLocation(program, "MaterialAlpha");
+	this->uMaterial = glGetUniformLocation(program, "material");
+	this->uNoTexture = glGetUniformLocation(program, "NoTexture");
 
-	// Init materials
-	//unsigned char* textureData;
-	//unsigned int textureWidth;
-	//unsigned int textureHeight;
+
+
 	for (int i = 0; i < this->model->getNumberOfMaterials(); ++i)
 	{
 		// if the current material has a texture
@@ -162,9 +162,9 @@ bool ContainerOBJ::init(const char* modelObjPath)
 
 void ContainerOBJ::draw()
 {
-	GLint positionLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "position");
-	glEnableVertexAttribArray(positionLocation);
-	glVertexAttribPointer(positionLocation,
+	GLint vertexLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "vertex");
+	glEnableVertexAttribArray(vertexLocation);
+	glVertexAttribPointer(vertexLocation,
 		3,
 		GL_FLOAT,
 		GL_FALSE,
@@ -179,6 +179,15 @@ void ContainerOBJ::draw()
 		GL_FALSE,
 		sizeof(ModelOBJ::Vertex),
 		reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
+
+	GLint vertexNormalLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "vertex_normal");
+	glEnableVertexAttribArray(vertexNormalLocation);
+	glVertexAttribPointer(vertexNormalLocation,
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(ModelOBJ::Vertex),
+		reinterpret_cast<const GLvoid*>(5 * sizeof(float)));
 
 	//glActiveTexture(GL_TEXTURE0);
 	//glBindTexture(GL_TEXTURE_2D, this->textureObject);
@@ -195,7 +204,15 @@ void ContainerOBJ::draw()
 	for (int m = 0; m < this->model->getNumberOfMeshes(); ++m)
 	{
 		const ModelOBJ::Mesh* mesh = &this->model->getMesh(m);
-		const std::string colorMap = mesh->pMaterial->colorMapFilename;
+		const ModelOBJ::Material* material = mesh->pMaterial;
+		const std::string colorMap = material->colorMapFilename;
+
+		//glUniform3fv(this->uMaterial.uAmbient, 1, material->ambient);
+		//glUniform3fv(this->uMaterial.uDiffuse, 1, material->diffuse);
+		//glUniform3fv(this->uMaterial.uSpecular, 1, material->specular);
+		//glUniform1fv(this->uMaterial.uShininess, 1, &material->shininess);
+		//glUniform1fv(this->uMaterial.uAlpha, 1, &material->alpha);
+
 
 		// reference for the GPU of which texture object to use. Default to 0;
 		GLuint texture = 0;
@@ -205,6 +222,11 @@ void ContainerOBJ::draw()
 		if (it != this->textureObjects.end())
 		{
 			texture = it->second;
+			glUniform1i(this->uNoTexture, 0);
+		}
+		else
+		{
+			glUniform1i(this->uNoTexture, 1);
 		}
 
 		// set the active texture unit
@@ -224,7 +246,7 @@ void ContainerOBJ::draw()
 	}
 
 	glDisableVertexAttribArray(texCoordsLocation);
-	glDisableVertexAttribArray(positionLocation);
+	glDisableVertexAttribArray(vertexLocation);
 }
 
 glm::mat4 const ContainerOBJ::getModelMatrix() const
