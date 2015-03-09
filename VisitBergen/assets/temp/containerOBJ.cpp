@@ -7,8 +7,8 @@
 
 ContainerOBJ::ContainerOBJ() :
 vertexBufferObject(0),
-indexBufferObject(0),
-uMaterial(0)
+indexBufferObject(0)
+//uMaterial(0)
 {
 	this->model.reset();
 	this->modelMatrix = glm::mat4();
@@ -84,7 +84,7 @@ bool ContainerOBJ::init(const char* modelObjPath)
 	//this->uMaterial.uSpecular = glGetUniformLocation(program, "MaterialSpecularColor");
 	//this->uMaterial.uShininess = glGetUniformLocation(program, "MaterialShininess");
 	//this->uMaterial.uAlpha = glGetUniformLocation(program, "MaterialAlpha");
-	this->uMaterial = glGetUniformLocation(program, "material");
+	//this->uMaterial = glGetUniformLocation(program, "material");
 	this->uNoTexture = glGetUniformLocation(program, "NoTexture");
 
 

@@ -59,7 +59,7 @@ void Renderer::init(void)
 		car = std::make_shared<ContainerOBJ>();
 	}
 
-	car->init("assets\\car.obj");
+	//car->init("assets\\car.obj");
 	car->init("assets\\cube\\cube.obj");
 
 	glUseProgram(0);
@@ -70,13 +70,13 @@ void Renderer::init(void)
 	setProjectionMode(PERSPECTIVE);
 
 	// setup for Directional Light
-	glUniform3fv(this->dirLight.uDirection, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, -1.0f)));
-	glUniform3fv(this->dirLight.uAmbientColor, 1, glm::value_ptr(glm::vec3(0.0f, 1.0f, 1.0f)));
-	glUniform3fv(this->dirLight.uDiffuseColor, 1, glm::value_ptr(glm::vec3(0.0f, 1.0f, 1.0f)));
-	glUniform3fv(this->dirLight.uSpecularColor, 1, glm::value_ptr(glm::vec3(0.0f, 1.0f, 1.0f)));
-	glUniform1f(this->dirLight.uAmbientIntensity, 0.2f);
-	glUniform1f(this->dirLight.uDiffuseIntensity, 0.3f);
-	glUniform1f(this->dirLight.uSpecularIntensity, 0.2f);
+	//glUniform3fv(this->dirLight.uDirection, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, -1.0f)));
+	//glUniform3fv(this->dirLight.uAmbientColor, 1, glm::value_ptr(glm::vec3(0.0f, 1.0f, 1.0f)));
+	//glUniform3fv(this->dirLight.uDiffuseColor, 1, glm::value_ptr(glm::vec3(0.0f, 1.0f, 1.0f)));
+	//glUniform3fv(this->dirLight.uSpecularColor, 1, glm::value_ptr(glm::vec3(0.0f, 1.0f, 1.0f)));
+	//glUniform1f(this->dirLight.uAmbientIntensity, 0.2f);
+	//glUniform1f(this->dirLight.uDiffuseIntensity, 0.3f);
+	//glUniform1f(this->dirLight.uSpecularIntensity, 0.2f);
 	
 }
 
@@ -110,7 +110,7 @@ void Renderer::handleEvent(const std::shared_ptr<Event>& event_)
 
 	if (std::shared_ptr<EventCameraZoom> zoomEvent = std::dynamic_pointer_cast<EventCameraZoom>(event_))
 	{
-		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(zoomEvent->getZoom()));
+		glm::mat4 scale = glm::scale(glm::mat4(), glm::vec3(float(zoomEvent->getZoom())));
 		this->viewMatrix *= scale;
 		printf("Renderer::handleEvent(EventCameraZoom(%f))\n", zoomEvent->getZoom());
 	}
@@ -333,13 +333,13 @@ bool Renderer::initShaders()
 	this->uTextureSampler = glGetUniformLocation(this->shaderProgram, "TextureSampler");
 
 	// get uniform locations for light
-	this->dirLight.uDirection = glGetUniformLocation(this->shaderProgram, "DirectionalLightDirection");
-	this->dirLight.uAmbientColor = glGetUniformLocation(this->shaderProgram, "DirectionalLightAmbientColor");
-	this->dirLight.uDiffuseColor = glGetUniformLocation(this->shaderProgram, "DirectionalLightDiffuseColor");
-	this->dirLight.uSpecularColor = glGetUniformLocation(this->shaderProgram, "DirectionalLightSpecularColor");
-	this->dirLight.uAmbientIntensity = glGetUniformLocation(this->shaderProgram, "DirectionalLightAmbientIntensity");
-	this->dirLight.uDiffuseIntensity = glGetUniformLocation(this->shaderProgram, "DirectionalLightDiffuseIntentsity");
-	this->dirLight.uSpecularIntensity = glGetUniformLocation(this->shaderProgram, "DirectionalLightSpecularIntensity");
+	//this->dirLight.uDirection = glGetUniformLocation(this->shaderProgram, "DirectionalLightDirection");
+	//this->dirLight.uAmbientColor = glGetUniformLocation(this->shaderProgram, "DirectionalLightAmbientColor");
+	//this->dirLight.uDiffuseColor = glGetUniformLocation(this->shaderProgram, "DirectionalLightDiffuseColor");
+	//this->dirLight.uSpecularColor = glGetUniformLocation(this->shaderProgram, "DirectionalLightSpecularColor");
+	//this->dirLight.uAmbientIntensity = glGetUniformLocation(this->shaderProgram, "DirectionalLightAmbientIntensity");
+	//this->dirLight.uDiffuseIntensity = glGetUniformLocation(this->shaderProgram, "DirectionalLightDiffuseIntentsity");
+	//this->dirLight.uSpecularIntensity = glGetUniformLocation(this->shaderProgram, "DirectionalLightSpecularIntensity");
 
 	assert(this->uModelMatrix != -1 && this->uViewMatrix != -1 && this->uProjectionMatrix != -1 && this->uTextureSampler != -1);
 

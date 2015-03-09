@@ -4,7 +4,7 @@
 #include <string>
 
 #include "..\util\includeGL.h"
-#include "../renderer/GLState.h"
+#include "..\renderer\GLState.h"
 
 struct GLState;
 

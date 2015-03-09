@@ -1,5 +1,9 @@
 #pragma once
 
+#include <map>
+#include <string>
+#include <memory>
+
 #include <GL\glew.h>
 #include <glm\glm.hpp>
 
@@ -49,7 +53,7 @@ private:
 	GLint uTextureSampler;
 	GLint uCameraPosition;
 
-	DirectionalLight dirLight;
+//	DirectionalLight dirLight;
 
 	glm::mat4 modelMatrix;
 	glm::mat4 viewMatrix;
@@ -74,6 +78,6 @@ private:
 
 	static std::shared_ptr<Renderer> instance;
 
-
+	std::map<std::string, std::shared_ptr<ShaderProgram>> shaderPrograms;
 };
 

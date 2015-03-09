@@ -7,27 +7,7 @@
 
 #include "..\..\util\includeGL.h"
 #include "..\..\thirdParty\model_obj.h"
-
-struct MaterialLocations
-{
-	GLint uAmbient;
-	GLint uDiffuse;
-	GLint uSpecular;
-	GLint uShininess;
-	GLint uAlpha;
-
-	MaterialLocations() 
-		: uAmbient(-1), uDiffuse(-1), uSpecular(-1), uShininess(-1), uAlpha(-1)
-	{}
-};
-
-struct Material
-{
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-	GLfloat shininess;
-};
+#include "..\..\shader\ShaderProgram.h"
 
 class ContainerOBJ
 {
@@ -45,14 +25,14 @@ private:
 	GLuint vertexBufferObject;
 	GLuint indexBufferObject;
 
-	glm::mat4 modelMatrix;
-
-	//MaterialLocations uMaterial;
-
-	Material material;
-	GLint uMaterial;
-
+	// uniform location for bool NoTexture
 	GLint uNoTexture;
 
+	// ModelMatrix for this particular model
+	glm::mat4 modelMatrix;
+
+	// map texture name to texture location on GPU
 	std::unordered_map<std::string, GLuint> textureObjects;
+
+	ShaderProgram* shaderProgram;
 };
