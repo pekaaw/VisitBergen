@@ -12,7 +12,9 @@
 
 /* test with mesh */
 #include "..\assets\temp\ContainerOBJ.h"
-#include "..\util\LightSpecifictions.h"
+
+#include "Camera.h"
+#include "..\shader\ShaderFactory.h"
 
 class Renderer :
 	public Process,
@@ -25,7 +27,7 @@ public:
 		ORTHOGRAPHIC,
 		NumberOfProjectionModes
 	};
-
+	
 	Renderer();
 	~Renderer();
 
@@ -41,43 +43,30 @@ public:
 	int const getWindowWidth() const;
 	int const getWindowHeight() const;
 
+
 protected:
 	virtual void onAbort();
 
 private:
-	GLuint shaderProgram;
-	GLint uModelMatrix;
-	GLint uViewMatrix;
-	GLint uProjectionMatrix;
-	GLint uNormalMatrix;
-	GLint uTextureSampler;
-	GLint uCameraPosition;
+	ShaderFactory shaderFactory;
 
-//	DirectionalLight dirLight;
-
-	glm::mat4 modelMatrix;
-	glm::mat4 viewMatrix;
-	glm::mat4 projectionMatrix;
-	glm::mat3 normalMatrix;
-
-	glm::vec3 cameraPosition;
-	glm::vec3 cameraCenter;
-	glm::vec3 cameraUpVector;
-
+	std::shared_ptr<Camera> camera;
 
 	bool usePerspectiveMode;
 
 	int windowWidth;
 	int windowHeight;
 
-	bool initShaders();
+	//bool initShaders();
 	void setProjectionMode(ProjectionMode mode = ProjectionMode::PERSPECTIVE);
+
+	// Map with shaderPrograms;
+	std::map<std::string, std::shared_ptr<ShaderProgram>> shaderPrograms;
 
 	/* test with mesh */
 	std::shared_ptr<ContainerOBJ> car;
 
+	// A singleton instance
 	static std::shared_ptr<Renderer> instance;
-
-	std::map<std::string, std::shared_ptr<ShaderProgram>> shaderPrograms;
 };
 

@@ -19,6 +19,7 @@ public:
 	void draw();
 
 	glm::mat4 const getModelMatrix() const;
+	void setShaderProgram(const std::shared_ptr<ShaderProgram> shaderProgram);
 
 private:
 	std::shared_ptr<ModelOBJ> model;
@@ -34,5 +35,5 @@ private:
 	// map texture name to texture location on GPU
 	std::unordered_map<std::string, GLuint> textureObjects;
 
-	ShaderProgram* shaderProgram;
+	std::shared_ptr<ShaderProgram> shaderProgram;
 };

@@ -49,6 +49,12 @@ ContainerOBJ::~ContainerOBJ()
 
 bool ContainerOBJ::init(const char* modelObjPath)
 {
+	if (this->shaderProgram == nullptr)
+	{
+		printf("Error: ShaderProgram not set before initializing model (%s).", modelObjPath);
+		return false;
+	}
+
 	if (!this->model)
 	{
 		this->model = std::make_shared<ModelOBJ>();
@@ -78,7 +84,8 @@ bool ContainerOBJ::init(const char* modelObjPath)
 		this->model->getIndexBuffer(),
 		GL_STATIC_DRAW);
 
-	GLuint program = Renderer::getInstance()->getShaderProgram();
+	GLuint program = this->shaderProgram->shaderProgram;
+	//GLuint program = Renderer::getInstance()->getShaderProgram();
 	//this->uMaterial.uAmbient = glGetUniformLocation(program, "MaterialAmbientColor");
 	//this->uMaterial.uDiffuse = glGetUniformLocation(program, "MaterialDiffuseColor");
 	//this->uMaterial.uSpecular = glGetUniformLocation(program, "MaterialSpecularColor");
@@ -86,8 +93,6 @@ bool ContainerOBJ::init(const char* modelObjPath)
 	//this->uMaterial.uAlpha = glGetUniformLocation(program, "MaterialAlpha");
 	//this->uMaterial = glGetUniformLocation(program, "material");
 	this->uNoTexture = glGetUniformLocation(program, "NoTexture");
-
-
 
 	for (int i = 0; i < this->model->getNumberOfMaterials(); ++i)
 	{
@@ -102,14 +107,6 @@ bool ContainerOBJ::init(const char* modelObjPath)
 
 			lodepng::load_file(png, *textureFileName);
 			unsigned int result = lodepng::decode(image, width, height, png);
-
-			//// load the texture
-			//unsigned int result = lodepng_decode_file(&textureData, 
-			//	&textureWidth,
-			//	&textureHeight,
-			//	textureFileName->c_str(),
-			//	LCT_RGB,
-			//	8);
 
 			if (result != 0)
 			{
@@ -162,7 +159,12 @@ bool ContainerOBJ::init(const char* modelObjPath)
 
 void ContainerOBJ::draw()
 {
-	GLint vertexLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "vertex");
+	glUseProgram(this->shaderProgram->shaderProgram);
+
+	this->shaderProgram->updateModelUniform(this->modelMatrix);
+
+	GLint vertexLocation = shaderProgram->attribLocations["vertex"];
+	//GLint vertexLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "vertex");
 	glEnableVertexAttribArray(vertexLocation);
 	glVertexAttribPointer(vertexLocation,
 		3,
@@ -171,16 +173,18 @@ void ContainerOBJ::draw()
 		sizeof(ModelOBJ::Vertex),
 		reinterpret_cast<const GLvoid*>(0));
 
-	GLint texCoordsLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "tex_coords");
-	glEnableVertexAttribArray(texCoordsLocation);
-	glVertexAttribPointer(texCoordsLocation,
-		2,
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(ModelOBJ::Vertex),
-		reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
+	//GLint texCoordsLocation = this->shaderProgarm->attribLocations["tex_coords"];
+	////GLint texCoordsLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "tex_coords");
+	//glEnableVertexAttribArray(texCoordsLocation);
+	//glVertexAttribPointer(texCoordsLocation,
+	//	2,
+	//	GL_FLOAT,
+	//	GL_FALSE,
+	//	sizeof(ModelOBJ::Vertex),
+	//	reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
 
-	GLint vertexNormalLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "vertex_normal");
+	GLint vertexNormalLocation = this->shaderProgram->attribLocations["normal"];
+	//GLint vertexNormalLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "normal");
 	glEnableVertexAttribArray(vertexNormalLocation);
 	glVertexAttribPointer(vertexNormalLocation,
 		3,
@@ -189,17 +193,9 @@ void ContainerOBJ::draw()
 		sizeof(ModelOBJ::Vertex),
 		reinterpret_cast<const GLvoid*>(5 * sizeof(float)));
 
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, this->textureObject);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexBufferObject);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexBufferObject);
-
-	//glDrawElements(
-	//	GL_TRIANGLES,
-	//	this->model->getNumberOfIndices(),
-	//	GL_UNSIGNED_INT,
-	//	0);
 
 	for (int m = 0; m < this->model->getNumberOfMeshes(); ++m)
 	{
@@ -207,12 +203,15 @@ void ContainerOBJ::draw()
 		const ModelOBJ::Material* material = mesh->pMaterial;
 		const std::string colorMap = material->colorMapFilename;
 
-		//glUniform3fv(this->uMaterial.uAmbient, 1, material->ambient);
-		//glUniform3fv(this->uMaterial.uDiffuse, 1, material->diffuse);
-		//glUniform3fv(this->uMaterial.uSpecular, 1, material->specular);
-		//glUniform1fv(this->uMaterial.uShininess, 1, &material->shininess);
-		//glUniform1fv(this->uMaterial.uAlpha, 1, &material->alpha);
+		GLState state;
 
+		state.material.ambient = glm::vec3(*reinterpret_cast<const glm::vec3*>(material->ambient));
+		state.material.diffuse = glm::vec3(*reinterpret_cast<const glm::vec3*>(material->diffuse));
+		state.material.specular = glm::vec3(*reinterpret_cast<const glm::vec3*>(material->specular));
+		state.material.shininess = material->shininess;
+
+		this->shaderProgram->updateMaterialUniforms(state);
+		this->shaderProgram->updateLightUniforms(state);
 
 		// reference for the GPU of which texture object to use. Default to 0;
 		GLuint texture = 0;
@@ -222,11 +221,11 @@ void ContainerOBJ::draw()
 		if (it != this->textureObjects.end())
 		{
 			texture = it->second;
-			glUniform1i(this->uNoTexture, 0);
+			glUniform1i(this->uNoTexture, GL_FALSE);
 		}
 		else
 		{
-			glUniform1i(this->uNoTexture, 1);
+			glUniform1i(this->uNoTexture, GL_TRUE);
 		}
 
 		// set the active texture unit
@@ -245,11 +244,17 @@ void ContainerOBJ::draw()
 			reinterpret_cast<const GLvoid*>(startIndex * sizeof(GL_UNSIGNED_INT))); // size in bytes
 	}
 
-	glDisableVertexAttribArray(texCoordsLocation);
+	glDisableVertexAttribArray(vertexLocation);
+	//glDisableVertexAttribArray(texCoordsLocation);
 	glDisableVertexAttribArray(vertexLocation);
 }
 
 glm::mat4 const ContainerOBJ::getModelMatrix() const
 {
 	return this->modelMatrix;
+}
+
+void ContainerOBJ::setShaderProgram(const std::shared_ptr<ShaderProgram> shaderProgram)
+{
+	this->shaderProgram = shaderProgram;
 }
