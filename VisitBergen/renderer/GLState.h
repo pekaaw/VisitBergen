@@ -27,4 +27,18 @@ struct GLState
 
 	Material material;
 	Light light;
+
+	GLState()
+	{
+		this->material.shininess = 0.5f;
+		this->material.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->material.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->material.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+		
+		this->light.position = glm::vec4(0.0f, 0.0f, -10.0f, 0.0f);
+		this->light.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->light.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->light.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	}
 };
