@@ -6,7 +6,6 @@
 #include "..\events\QuitApplication.h"
 #include "..\events\EventCameraTransform.h"
 #include "..\events\EventToggleProjectionMode.h"
-#include "..\events\EventCameraZoom.h"
 
 std::shared_ptr<InputHandler> InputHandler::instance = nullptr;
 
@@ -68,12 +67,18 @@ void InputHandler::mouseWheel(int button, int direction, int x, int y)
 	if (direction > 0)
 	{
 		// zoom in
-		EventManager::getInstance()->fireEvent(std::make_shared<EventCameraZoom>(1.05));
+		glm::mat4 zoom = glm::scale(glm::mat4(), glm::vec3(1.05f));
+		std::shared_ptr<EventCameraTransform> cameraTransform = std::make_shared<EventCameraTransform>();
+		cameraTransform->setTransform(zoom);
+		EventManager::getInstance()->fireEvent(cameraTransform);
 	}
 	else
 	{
 		// zoom out
-		EventManager::getInstance()->fireEvent(std::make_shared<EventCameraZoom>(0.95));
+		glm::mat4 zoom = glm::scale(glm::mat4(), glm::vec3(0.95f));
+		std::shared_ptr<EventCameraTransform> cameraTransform = std::make_shared<EventCameraTransform>();
+		cameraTransform->setTransform(zoom);
+		EventManager::getInstance()->fireEvent(cameraTransform);
 	}
 }
 
