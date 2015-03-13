@@ -11,6 +11,7 @@
 //#include "..\util\fileutil.h"
 #include "..\events\EventCameraTransform.h"
 #include "..\events\EventToggleProjectionMode.h"
+#include "..\events\EventToggleModelRotation.h"
 
 Renderer::Renderer() :
 	//shaderProgram(0),
@@ -57,6 +58,7 @@ void Renderer::init(void)
 	if (!car->init("assets\\car.obj"))
 	//if (!car->init("assets\\capsule\\capsule.obj"))
 	//if (!car->init("assets\\cube\\cube.obj"))
+	//if (!car->init("assets\\sphere\\sphere.obj"))
 	{
 		printf("Car not loaded.");
 	}
@@ -86,7 +88,7 @@ void Renderer::handleEvent(const std::shared_ptr<Event>& event_)
 		//printf("Renderer received CameraTransform\n");
 	}
 
-	if (std::shared_ptr<EventToggleProjectionMode> projectionEvent = std::dynamic_pointer_cast<EventToggleProjectionMode>(event_))
+	else if (std::shared_ptr<EventToggleProjectionMode> projectionEvent = std::dynamic_pointer_cast<EventToggleProjectionMode>(event_))
 	{
 		this->usePerspectiveMode = !this->usePerspectiveMode;
 
@@ -98,6 +100,11 @@ void Renderer::handleEvent(const std::shared_ptr<Event>& event_)
 		{
 			setProjectionMode(ORTHOGRAPHIC);
 		}
+	}
+
+	else if (std::shared_ptr<EventToggleModelRotation> toggleEvent = std::dynamic_pointer_cast<EventToggleModelRotation>(event_))
+	{
+		this->car->toggleRotation();
 	}
 }
 

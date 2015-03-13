@@ -6,6 +6,7 @@
 #include "..\events\QuitApplication.h"
 #include "..\events\EventCameraTransform.h"
 #include "..\events\EventToggleProjectionMode.h"
+#include "..\events\EventToggleModelRotation.h"
 
 std::shared_ptr<InputHandler> InputHandler::instance = nullptr;
 
@@ -52,6 +53,12 @@ void InputHandler::keyboard(unsigned char key, int x, int y)
 	case 'p':
 		EventManager::getInstance()->fireEvent(std::make_shared<EventToggleProjectionMode>());
 		printf("Toggle projection mode.\n");
+		break;
+
+	case 'r':
+		EventManager::getInstance()->fireEvent(std::make_shared<EventToggleModelRotation>());
+		printf("Toggle model rotation.\n");
+		break;
 	}
 }
 

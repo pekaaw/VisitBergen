@@ -17,6 +17,7 @@ struct Light
 	glm::vec3 ambient;
 	glm::vec3 diffuse;
 	glm::vec3 specular;
+	glm::vec3 intensities;
 };
 
 struct GLState
@@ -26,19 +27,27 @@ struct GLState
 	glm::mat4 projectionMatrix;
 
 	Material material;
-	Light light;
+	Light headLight;
+	Light directionalLight;
 
 	GLState()
 	{
-		this->material.shininess = 0.5f;
+		this->material.shininess = 1.0f;
 		this->material.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
 		this->material.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
 		this->material.specular = glm::vec3(1.0f, 1.0f, 1.0f);
 		
-		this->light.position = glm::vec4(0.0f, 0.0f, -10.0f, 0.0f);
-		this->light.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
-		this->light.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-		this->light.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->headLight.position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); // not used
+		this->headLight.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->headLight.diffuse = glm::vec3(0.0f, 1.0f, 0.0f);
+		this->headLight.specular = glm::vec3(0.0f, 1.0f, 0.0f);
+		this->headLight.intensities = glm::vec3(0.1f, 0.5f, 0.9f);	// vec3(ambient-, diffuse-, specular-) intensity
+
+		this->directionalLight.position = glm::vec4(10.0f, 3.0f, -3.0f, 0.0f);
+		this->directionalLight.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->directionalLight.diffuse = glm::vec3(0.0f, 0.0f, 1.0f);
+		this->directionalLight.specular = glm::vec3(0.0f, 0.0f, 1.0f);
+		this->directionalLight.intensities = glm::vec3(0.1f, 0.8f, 0.9f);	// vec3(ambient-, diffuse-, specular-) intensity
 
 	}
 };

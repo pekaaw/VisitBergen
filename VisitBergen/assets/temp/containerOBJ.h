@@ -20,11 +20,15 @@ public:
 
 	glm::mat4 const getModelMatrix() const;
 	void setShaderProgram(const std::shared_ptr<ShaderProgram> shaderProgram);
+	void toggleRotation();
 
 private:
 	std::shared_ptr<ModelOBJ> model;
 	GLuint vertexBufferObject;
 	GLuint indexBufferObject;
+
+	// Turn rotation during drawing on / off
+	bool runRotation;
 
 	// uniform location for bool NoTexture
 	GLint uNoTexture;
@@ -36,4 +40,6 @@ private:
 	std::unordered_map<std::string, GLuint> textureObjects;
 
 	std::shared_ptr<ShaderProgram> shaderProgram;
+
+	void averageVertexNormals();
 };

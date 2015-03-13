@@ -7,7 +7,8 @@
 
 ContainerOBJ::ContainerOBJ() :
 vertexBufferObject(0),
-indexBufferObject(0)
+indexBufferObject(0),
+runRotation(false)
 //uMaterial(0)
 {
 	this->model.reset();
@@ -66,6 +67,11 @@ bool ContainerOBJ::init(const char* modelObjPath)
 		return false;
 	}
 
+	// Calculate and apply average normal per vertex
+	averageVertexNormals();
+
+
+	// Normalize the model (max width|height|depth = 1 and origin in center of model
 	this->model->normalize();
 
 	// Generate buffer and fill with vertices
@@ -159,6 +165,11 @@ bool ContainerOBJ::init(const char* modelObjPath)
 
 void ContainerOBJ::draw()
 {
+	if (this->runRotation)
+	{
+		this->modelMatrix = glm::rotate_slow(this->modelMatrix, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+
 	glUseProgram(this->shaderProgram->shaderProgram);
 
 	this->shaderProgram->updateModelUniform(this->modelMatrix);
@@ -258,3 +269,70 @@ void ContainerOBJ::setShaderProgram(const std::shared_ptr<ShaderProgram> shaderP
 {
 	this->shaderProgram = shaderProgram;
 }
+
+void ContainerOBJ::toggleRotation()
+{
+	if (this->runRotation)
+	{
+		this->modelMatrix = glm::mat4(); // set to identity
+	}
+
+	this->runRotation = !this->runRotation;
+}
+
+void ContainerOBJ::averageVertexNormals()
+{
+	float* VBOstart = static_cast<float*>(const_cast<ModelOBJ::Vertex*>(this->model->getVertexBuffer())->position);
+
+	std::unordered_map<float, std::unordered_map<float, std::unordered_map<float, std::vector<float*>>>> box;
+
+	printf("Start storing positions...\n");
+
+	model->getMesh(0).startIndex;
+	int numVertices = this->model->getNumberOfVertices();
+	float* position = VBOstart;
+	float x, y, z;
+	for (int i = 0; i < numVertices; ++i)
+	{
+		x = position[0];
+		y = position[1];
+		z = position[2];
+		box[x][y][z].push_back(position);
+		position += 15;	// go forward 15 floats in memory (since ModelOBJ::Vertex contains 15 floats)
+	}
+
+
+	printf("Stored!   (positions in place in vector)\n");
+
+	for (auto& xMap : box)
+	{
+		for (auto& yMap : xMap.second)
+		{
+			for (auto& zMap : yMap.second)
+			{
+				float xNormal = 0;
+				float yNormal = 0;
+				float zNormal = 0;
+
+				for (float* vertex : zMap.second)
+				{
+					xNormal += *(vertex + 6);	// the 6th float is the first float of the ModelOBJ::Vertex normal
+					yNormal += *(vertex + 7);	// the 7th float is the second float of the ModelOBJ::Vertex normal
+					zNormal += *(vertex + 8);	// the 8th float is the third float of the ModelOBJ::Vertex normal
+				}
+
+				auto size = zMap.second.size();
+				xNormal /= size;
+				yNormal /= size;
+				zNormal /= size;
+
+				for (float* vertex : zMap.second)
+				{
+					*(vertex + 6) = xNormal;	// the 6th float is the first float of the ModelOBJ::Vertex normal
+					*(vertex + 7) = yNormal;	// the 7th float is the second float of the ModelOBJ::Vertex normal
+					*(vertex + 8) = zNormal;	// the 8th float is the third float of the ModelOBJ::Vertex normal
+				}
+			}
+		}
+	}
+}  // end averageVertexNormals()

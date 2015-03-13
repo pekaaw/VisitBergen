@@ -8,8 +8,7 @@
 #include "events\QuitApplication.h"
 #include "events\EventCameraTransform.h"
 #include "events\EventToggleProjectionMode.h"
-#include "events\EventCameraZoom.h"
-
+#include "events\EventToggleModelRotation.h"
 
 Application::Application()
 {
@@ -45,7 +44,7 @@ int Application::init(int* argc, char** argv)
 	glutInit(argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowSize(this->renderer->getWindowWidth(), this->renderer->getWindowHeight());
-	glutInitWindowPosition(1000, 0);
+	glutInitWindowPosition(470, 0);
 	glutCreateWindow(this->windowTitle);
 
 	GLenum result = glewInit();
@@ -80,7 +79,7 @@ int Application::execute()
 	this->eventManager->addListener(shared_from_this(), std::make_shared<QuitApplication>());
 	this->eventManager->addListener(this->renderer, std::make_shared<EventCameraTransform>());
 	this->eventManager->addListener(this->renderer, std::make_shared<EventToggleProjectionMode>());
-	this->eventManager->addListener(this->renderer, std::make_shared<EventCameraZoom>(0));
+	this->eventManager->addListener(this->renderer, std::make_shared<EventToggleModelRotation>());
 
 	unsigned long duration;
 	unsigned long prefDuration = unsigned long (1000 / this->preferredFPS);
