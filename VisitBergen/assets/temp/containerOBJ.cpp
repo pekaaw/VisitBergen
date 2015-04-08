@@ -8,7 +8,8 @@
 ContainerOBJ::ContainerOBJ() :
 vertexBufferObject(0),
 indexBufferObject(0),
-runRotation(false)
+runRotation(false),
+lightRotation(0.0f)
 //uMaterial(0)
 {
 	this->model.reset();
@@ -68,7 +69,7 @@ bool ContainerOBJ::init(const char* modelObjPath)
 	}
 
 	// Calculate and apply average normal per vertex
-	averageVertexNormals();
+	//averageVertexNormals();
 
 
 	// Normalize the model (max width|height|depth = 1 and origin in center of model
@@ -169,6 +170,7 @@ void ContainerOBJ::draw()
 	{
 		this->modelMatrix = glm::rotate_slow(this->modelMatrix, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
 	}
+	this->lightRotation += 0.03f;
 
 	glUseProgram(this->shaderProgram->shaderProgram);
 
@@ -184,7 +186,7 @@ void ContainerOBJ::draw()
 		sizeof(ModelOBJ::Vertex),
 		reinterpret_cast<const GLvoid*>(0));
 
-	//GLint texCoordsLocation = this->shaderProgarm->attribLocations["tex_coords"];
+	//GLint texCoordsLocation = this->shaderProgram->attribLocations["tex_coords"];
 	////GLint texCoordsLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "tex_coords");
 	//glEnableVertexAttribArray(texCoordsLocation);
 	//glVertexAttribPointer(texCoordsLocation,
@@ -220,6 +222,8 @@ void ContainerOBJ::draw()
 		state.material.diffuse = glm::vec3(*reinterpret_cast<const glm::vec3*>(material->diffuse));
 		state.material.specular = glm::vec3(*reinterpret_cast<const glm::vec3*>(material->specular));
 		state.material.shininess = material->shininess;
+		glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), this->lightRotation, glm::vec3(0.0f, 1.0f, -1.0f));
+		state.movingLight.position = rotation * state.movingLight.position;
 
 		this->shaderProgram->updateMaterialUniforms(state);
 		this->shaderProgram->updateLightUniforms(state);

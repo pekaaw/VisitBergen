@@ -26,6 +26,13 @@ void ShaderProgram::initLightUniforms()
 	initUniform("directionalLight.diffuse");
 	initUniform("directionalLight.specular");
 	initUniform("directionalLight.intensities");
+
+	initUniform("movingLight.position");
+	initUniform("movingLight.ambient");
+	initUniform("movingLight.diffuse");
+	initUniform("movingLight.specular");
+	initUniform("movingLight.lightRadius");
+	initUniform("movingLight.litRadius");
 }
 
 void ShaderProgram::initModelViewProjectionUniforms()
@@ -79,6 +86,13 @@ void ShaderProgram::updateLightUniforms(const GLState &state)
 	glUniform3fv(uniformIDs["directionalLight.specular"], 1, &state.directionalLight.specular[0]);
 	glUniform3fv(uniformIDs["directionalLight.intensities"], 1, &state.directionalLight.intensities[0]);
 
+	glUniform4fv(uniformIDs["movingLight.position"], 1, &state.movingLight.position[0]);
+	glUniform3fv(uniformIDs["movingLight.ambient"], 1, &state.movingLight.ambient[0]);
+	glUniform3fv(uniformIDs["movingLight.diffuse"], 1, &state.movingLight.diffuse[0]);
+	glUniform3fv(uniformIDs["movingLight.specular"], 1, &state.movingLight.specular[0]);
+	glUniform1f(uniformIDs["movingLight.lightRadius"], state.movingLight.lightRadius);
+	glUniform1f(uniformIDs["movingLight.litRadius"], state.movingLight.litRadius);
+
 	//printf("update Light Uniforms...\n ambient %f, %f, %f \n", state.light.ambient.r, state.light.ambient.g, state.light.ambient.b);
 }
 
@@ -109,5 +123,5 @@ void ShaderProgram::updateViewUniform(const glm::mat4& viewMatrix)
 void ShaderProgram::updateProjectionUniform(const glm::mat4& projectionMatrix)
 {
 	glUniformMatrix4fv(uniformIDs["ProjectionMatrix"], 1, GL_FALSE, &projectionMatrix[0][0]);
-	printf("Updating projection uniform.\n");
+	//printf("Updating projection uniform.\n");
 }

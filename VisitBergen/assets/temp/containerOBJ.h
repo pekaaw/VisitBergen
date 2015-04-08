@@ -29,6 +29,7 @@ private:
 
 	// Turn rotation during drawing on / off
 	bool runRotation;
+	float lightRotation;
 
 	// uniform location for bool NoTexture
 	GLint uNoTexture;

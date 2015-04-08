@@ -15,15 +15,23 @@ struct Light
 	vec3 diffuse;
 	vec3 specular;
 	vec3 intensities;
+	float lightRadius;
+	float litRadius;
 };
 
 
 in vec3 N;
 in vec3 v;
+in vec2 textureCoordinates;
+
+// Sampler to access texture
+//uniform sampler2D TextureSampler;
+uniform bool NoTexture;
 
 uniform Material material;
 uniform Light headLight;
 uniform Light directionalLight;
+uniform Light movingLight;
 uniform mat4 ModelMatrix;
 uniform mat4 ViewMatrix;
 
@@ -61,16 +69,40 @@ void main()
 	vec3 headDiffuse = headLight.diffuse * headLight.intensities.y * NdotL;
 	//vec3 headSpecular = headLight.specular * headLight.intensities.z * pow(max(0.0, dot(R_head,C)), 1); // * material.shininess);
 	vec3 headSpecular = headLight.specular * headLight.intensities.z * pow((RdotL), 50); // * material.shininess);
+//	if( !NoTexture )
+//	{
+//		headSpecular = vec3(0.0f);
+//	}
 	
 	// directian Light
 	vec3 dirAmbient = directionalLight.ambient * directionalLight.intensities.x;
 	vec3 dirDiffuse = directionalLight.diffuse * directionalLight.intensities.y * NdotLdir;
 	vec3 dirSpecular = directionalLight.specular * directionalLight.intensities.z * pow(RdotLdir, 25); // pow(max(0.01, dot(R_dir,C)), 50); // * material.shininess);
 
+	// moving point light - from https://imdoingitwrong.wordpress.com/2011/02/10/improved-light-attenuation/
+		vec3 movingLightDirection = movingLight.position.xyz - v;
+		float movingLightDistance = length(movingLightDirection);
+		movingLightDistance = max(movingLightDistance - movingLight.lightRadius, 0);
+		movingLightDirection /= movingLightDistance;	// normalization
+
+		float movingLight_NdotL = max(dot(movingLightDirection, N), 0);
+		vec3 R_movingLight = normalize(reflect(movingLightDirection, N));
+		float movingLight_RdotL = max(dot(-movingLightDirection, R_movingLight), 0);
+
+		float distanceRatio = movingLightDistance / movingLight.litRadius;
+		float d = movingLightDistance / (1 - distanceRatio * distanceRatio);
+		float r = movingLight.lightRadius;
+		float attenuation = 1 / ((d/r + 1) * (d/r + 1));
+
+	vec3 movAmbient = movingLight.ambient * attenuation;
+	vec3 movDiffuse = movingLight.diffuse * movingLight_NdotL * attenuation;
+	vec3 movSpecular = clamp(movingLight.specular * attenuation * movingLight_RdotL, 0.0f, 1.0f) * 0.5f;
+
+
 	// total values
-	vec3 ambient = (material.ambient * headAmbient) + (material.ambient * dirAmbient);
-	vec3 diffuse = (material.diffuse * headDiffuse) + (material.diffuse * dirDiffuse);
-	vec3 specular = (material.specular * clamp(headSpecular, 0.0f, 1.0f)) + (material.specular * clamp(dirSpecular, 0.01f, 1.0f));
+	vec3 ambient = (material.ambient * headAmbient) + (material.ambient * dirAmbient) + (material.ambient * movAmbient);
+	vec3 diffuse = (material.diffuse * headDiffuse) + (material.diffuse * dirDiffuse) + (material.diffuse * movDiffuse);
+	vec3 specular = (material.specular * clamp(headSpecular, 0.0f, 1.0f)) + (material.specular * clamp(dirSpecular, 0.01f, 1.0f)) + (material.specular * movSpecular);
 
 	// Calculate final color
 	outputColor = vec4(ambient + diffuse + specular, 1);

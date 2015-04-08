@@ -18,6 +18,8 @@ struct Light
 	glm::vec3 diffuse;
 	glm::vec3 specular;
 	glm::vec3 intensities;
+	GLfloat lightRadius;
+	GLfloat litRadius;		// must not be 0 when used as point light
 };
 
 struct GLState
@@ -29,6 +31,7 @@ struct GLState
 	Material material;
 	Light headLight;
 	Light directionalLight;
+	Light movingLight;
 
 	GLState()
 	{
@@ -49,5 +52,14 @@ struct GLState
 		this->directionalLight.specular = glm::vec3(0.0f, 0.0f, 1.0f);
 		this->directionalLight.intensities = glm::vec3(0.1f, 0.8f, 0.9f);	// vec3(ambient-, diffuse-, specular-) intensity
 
+		this->movingLight.position = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+		//this->movingLight.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+		//this->movingLight.diffuse = glm::vec3(1.0f, 0.84f, 0.0f);
+		//this->movingLight.specular = glm::vec3(1.0f, 0.84f, 0.0f);
+		this->movingLight.ambient = glm::vec3(1.0f, 0.0f, 0.0f);
+		this->movingLight.diffuse = glm::vec3(1.0f, 0.0f, 0.0f);
+		this->movingLight.specular = glm::vec3(1.0f, 0.0f, 0.0f);
+		this->movingLight.lightRadius = 0.7f;
+		this->movingLight.litRadius = 1.0f; // must not be 0 when used as point light
 	}
 };

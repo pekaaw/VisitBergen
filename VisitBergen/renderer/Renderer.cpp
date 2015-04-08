@@ -46,6 +46,7 @@ void Renderer::init(void)
 
 	this->shaderPrograms["phongLighting"] = phongLightingProgram;
 
+
 	if (!this->car)
 	{
 		car = std::make_shared<ContainerOBJ>();
@@ -55,15 +56,15 @@ void Renderer::init(void)
 		this->shaderPrograms["phongLighting"]->updateAllUniforms(state);
 	}
 
-	if (!car->init("assets\\car.obj"))
-	//if (!car->init("assets\\capsule\\capsule.obj"))
+	//if (!car->init("assets\\car.obj"))
+	if (!car->init("assets\\capsule\\capsule.obj"))
 	//if (!car->init("assets\\cube\\cube.obj"))
 	//if (!car->init("assets\\sphere\\sphere.obj"))
 	{
 		printf("Car not loaded.");
 	}
 
-	//glUseProgram(0);
+	glUseProgram(0);
 
 	// Set the clearcolor for the gl context
 	glClearColor(0.0f, 0.5f, 0.7f, 0.0f);
@@ -141,8 +142,6 @@ void Renderer::display()
 		this->car->draw();
 	}
 	
-
-
 
 
 	glUseProgram(0);
