@@ -17,8 +17,9 @@ std::shared_ptr<ShaderProgram> ShaderFactory::makeShaderProgram(const std::strin
 			return nullptr;
 		}
 
-		program->attribLocations["vertex"] = glGetAttribLocation(program->shaderProgram, "vertex");
-		program->attribLocations["normal"] = glGetAttribLocation(program->shaderProgram, "normal");
+		program->initAttribLocations();
+		//program->attribLocations["vertex"] = glGetAttribLocation(program->shaderProgram, "vertex");
+		//program->attribLocations["normal"] = glGetAttribLocation(program->shaderProgram, "normal");
 
 		program->initMaterialUniforms();
 		program->initLightUniforms();

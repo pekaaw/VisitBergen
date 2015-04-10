@@ -56,8 +56,8 @@ void Renderer::init(void)
 		this->shaderPrograms["phongLighting"]->updateAllUniforms(state);
 	}
 
-	//if (!car->init("assets\\car.obj"))
-	if (!car->init("assets\\capsule\\capsule.obj"))
+	if (!car->init("assets\\car.obj"))
+	//if (!car->init("assets\\capsule\\capsule.obj"))
 	//if (!car->init("assets\\cube\\cube.obj"))
 	//if (!car->init("assets\\sphere\\sphere.obj"))
 	{

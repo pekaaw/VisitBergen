@@ -41,6 +41,7 @@ void ShaderProgram::initModelViewProjectionUniforms()
 	initUniform("ViewMatrix");
 	initUniform("ProjectionMatrix");
 	initUniform("NormalMatrix");
+	initUniform("TextureSampler");
 }
 
 void ShaderProgram::initAttribLocation(const std::string &name)
@@ -51,7 +52,7 @@ void ShaderProgram::initAttribLocation(const std::string &name)
 void ShaderProgram::initAttribLocations()
 {
 	initAttribLocation("vertex");
-
+	initAttribLocation("tex_coords");
 	initAttribLocation("normal");
 }
 

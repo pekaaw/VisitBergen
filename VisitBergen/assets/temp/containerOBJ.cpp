@@ -184,17 +184,17 @@ void ContainerOBJ::draw()
 		GL_FLOAT,
 		GL_FALSE,
 		sizeof(ModelOBJ::Vertex),
-		reinterpret_cast<const GLvoid*>(0));
+		reinterpret_cast<const GLvoid*>(0 * sizeof(float)));
 
-	//GLint texCoordsLocation = this->shaderProgram->attribLocations["tex_coords"];
-	////GLint texCoordsLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "tex_coords");
-	//glEnableVertexAttribArray(texCoordsLocation);
-	//glVertexAttribPointer(texCoordsLocation,
-	//	2,
-	//	GL_FLOAT,
-	//	GL_FALSE,
-	//	sizeof(ModelOBJ::Vertex),
-	//	reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
+	GLint texCoordsLocation = this->shaderProgram->attribLocations["tex_coords"];
+	//GLint texCoordsLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "tex_coords");
+	glEnableVertexAttribArray(texCoordsLocation);
+	glVertexAttribPointer(texCoordsLocation,
+		2,
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(ModelOBJ::Vertex),
+		reinterpret_cast<const GLvoid*>(3 * sizeof(float)));
 
 	GLint vertexNormalLocation = this->shaderProgram->attribLocations["normal"];
 	//GLint vertexNormalLocation = glGetAttribLocation(Renderer::getInstance()->getShaderProgram(), "normal");
@@ -237,6 +237,7 @@ void ContainerOBJ::draw()
 		{
 			texture = it->second;
 			glUniform1i(this->uNoTexture, GL_FALSE);
+			glUniform1i(this->shaderProgram->uniformIDs["TextureSampler"], 0); // Use GL_TEXTURE0
 		}
 		else
 		{
@@ -259,8 +260,8 @@ void ContainerOBJ::draw()
 			reinterpret_cast<const GLvoid*>(startIndex * sizeof(GL_UNSIGNED_INT))); // size in bytes
 	}
 
-	glDisableVertexAttribArray(vertexLocation);
-	//glDisableVertexAttribArray(texCoordsLocation);
+	glDisableVertexAttribArray(vertexNormalLocation);
+	glDisableVertexAttribArray(texCoordsLocation);
 	glDisableVertexAttribArray(vertexLocation);
 }
 

@@ -25,7 +25,7 @@ in vec3 v;
 in vec2 textureCoordinates;
 
 // Sampler to access texture
-//uniform sampler2D TextureSampler;
+uniform sampler2D TextureSampler;
 uniform bool NoTexture;
 
 uniform Material material;
@@ -98,14 +98,19 @@ void main()
 	vec3 movDiffuse = movingLight.diffuse * movingLight_NdotL * attenuation;
 	vec3 movSpecular = clamp(movingLight.specular * attenuation * movingLight_RdotL, 0.0f, 1.0f) * 0.5f;
 
+	// Texture values
+	vec4 texColor = texture2D(TextureSampler, vec2(textureCoordinates.s, 1.0 - textureCoordinates.t));
 
 	// total values
+	//vec3 ambient = (material.ambient * headAmbient) + (material.ambient * dirAmbient) + (material.ambient * movAmbient);
+	//vec3 diffuse = (material.diffuse * headDiffuse) + (material.diffuse * dirDiffuse) + (material.diffuse * movDiffuse);
+	//vec3 specular = (material.specular * clamp(headSpecular, 0.0f, 1.0f)) + (material.specular * clamp(dirSpecular, 0.01f, 1.0f)) + (material.specular * movSpecular);
 	vec3 ambient = (material.ambient * headAmbient) + (material.ambient * dirAmbient) + (material.ambient * movAmbient);
-	vec3 diffuse = (material.diffuse * headDiffuse) + (material.diffuse * dirDiffuse) + (material.diffuse * movDiffuse);
+	vec4 diffuse = (texColor * vec4(headDiffuse,1)) + (texColor * vec4(dirDiffuse,1)) + (texColor * vec4(movDiffuse,1));
 	vec3 specular = (material.specular * clamp(headSpecular, 0.0f, 1.0f)) + (material.specular * clamp(dirSpecular, 0.01f, 1.0f)) + (material.specular * movSpecular);
 
 	// Calculate final color
-	outputColor = vec4(ambient + diffuse + specular, 1);
+	outputColor = vec4(ambient,1) + diffuse + vec4(specular, 1);
 	//outputColor = vec4(headAmbient, 1.0f);
 	//outputColor = vec4(0.0f, 1.0f, 1.0f, 1.0f);
 }
