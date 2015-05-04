@@ -17,8 +17,14 @@ struct Light
 	vec3 intensities;
 	float lightRadius;
 	float litRadius;
+//	bool dirLight;
 };
 
+//uniform Light lights[20];
+//int number_of_lights;
+// When wanting multiple lights, it is ok to set it as an array like above and
+// using an int as a counter for how many to use. Values can be transferred as
+// usual with "lights[0].position" and "lights[1].position" etc..
 
 in vec3 N;
 in vec3 v;
@@ -106,7 +112,16 @@ void main()
 	//vec3 diffuse = (material.diffuse * headDiffuse) + (material.diffuse * dirDiffuse) + (material.diffuse * movDiffuse);
 	//vec3 specular = (material.specular * clamp(headSpecular, 0.0f, 1.0f)) + (material.specular * clamp(dirSpecular, 0.01f, 1.0f)) + (material.specular * movSpecular);
 	vec3 ambient = (material.ambient * headAmbient) + (material.ambient * dirAmbient) + (material.ambient * movAmbient);
-	vec4 diffuse = (texColor * vec4(headDiffuse,1)) + (texColor * vec4(dirDiffuse,1)) + (texColor * vec4(movDiffuse,1));
+	vec4 diffuse;
+	if( NoTexture) 
+	{
+		diffuse = vec4((material.diffuse * headDiffuse) + (material.diffuse * dirDiffuse) + (material.diffuse * movDiffuse), 1.0);
+	}
+	else
+	{
+		diffuse = (texColor * vec4(headDiffuse,1)) + (texColor * vec4(dirDiffuse,1)) + (texColor * vec4(movDiffuse,1));
+	}
+
 	vec3 specular = (material.specular * clamp(headSpecular, 0.0f, 1.0f)) + (material.specular * clamp(dirSpecular, 0.01f, 1.0f)) + (material.specular * movSpecular);
 
 	// Calculate final color

@@ -37,6 +37,7 @@ void Renderer::init(void)
 
 	// Add a shaderProgram to use
 	std::shared_ptr<ShaderProgram> phongLightingProgram = this->shaderFactory.makeShaderProgram("phongLighting");
+	//std::shared_ptr<ShaderProgram> phongLightingProgram = this->shaderFactory.makeShaderProgram("toonShading");
 	if (!phongLightingProgram)
 	{
 		// Initialization failed, notify ProcessManager that process failed...
@@ -56,7 +57,10 @@ void Renderer::init(void)
 		this->shaderPrograms["phongLighting"]->updateAllUniforms(state);
 	}
 
-	if (!car->init("assets\\car.obj"))
+	//if (!car->init("assets\\car.obj"))
+	//if (!car->init("assets\\bergen\\bergen_terrain.obj"))
+	if (!car->init("assets\\bergen.obj"))
+	//if (!car->init("assets\\teddy.obj"))
 	//if (!car->init("assets\\capsule\\capsule.obj"))
 	//if (!car->init("assets\\cube\\cube.obj"))
 	//if (!car->init("assets\\sphere\\sphere.obj"))

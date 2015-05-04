@@ -6,7 +6,7 @@
 
 std::shared_ptr<ShaderProgram> ShaderFactory::makeShaderProgram(const std::string &shaderName)
 {
-	if (shaderName == "phongLighting")
+	if (shaderName == "phongLighting" || true) // or true to always be true *for testing purposes
 	{
 		std::shared_ptr<ShaderProgram> program = std::make_shared<ShaderProgram>();
 		program->shaderProgram = initGLProgram(shaderName);

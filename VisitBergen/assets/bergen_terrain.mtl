@@ -1,0 +1,11 @@
+# Bergen Terrain
+
+newmtl bergen
+Ns 96.0
+Ka 1.0 1.0 1.0
+Kd 1.0 1.0 1.0
+Ks 1.0 1.0 1.0
+Ni -1.0
+d 1.0
+illum 2
+map_Kd assets\\bergen_terrain_texture.png

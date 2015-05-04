@@ -1,0 +1,11 @@
+<Actor type="Car" resource="actors\car.xml">
+
+  <TransformComponent>
+    <Position x="0" y="0" z="0" />
+  </TransformComponent>
+
+  <MeshComponent>
+    <Model format="obj">assets\car.obj</Model>
+  </MeshComponent>
+  
+</Actor>

@@ -54,6 +54,7 @@ bool ContainerOBJ::init(const char* modelObjPath)
 	if (this->shaderProgram == nullptr)
 	{
 		printf("Error: ShaderProgram not set before initializing model (%s).", modelObjPath);
+		printf("Error 0\n");
 		return false;
 	}
 
@@ -65,6 +66,7 @@ bool ContainerOBJ::init(const char* modelObjPath)
 	if (!this->model->import(modelObjPath))
 	{
 		printf("Unable to load model: %s \n", modelObjPath);
+		printf("ContainerOBJ::init::Error 1\n");
 		return false;
 	}
 
@@ -73,7 +75,7 @@ bool ContainerOBJ::init(const char* modelObjPath)
 
 
 	// Normalize the model (max width|height|depth = 1 and origin in center of model
-	this->model->normalize();
+	//this->model->normalize();
 
 	// Generate buffer and fill with vertices
 	glGenBuffers(1, &this->vertexBufferObject);
@@ -118,6 +120,7 @@ bool ContainerOBJ::init(const char* modelObjPath)
 			if (result != 0)
 			{
 				printf("Error: ContainerOBJ::init was unable to load texture: %s. LodePNG says %u \n", textureFileName->c_str(), result);
+				printf("ContainerOBJ::init::Error2\n");
 				return false;
 			}
 
@@ -159,7 +162,7 @@ bool ContainerOBJ::init(const char* modelObjPath)
 		}
 	}
 
-
+	printf("ContainerOBJ::init::Return true!\n");
 
 	return true;
 } /* Mesh::init(inputFile) */
@@ -168,7 +171,7 @@ void ContainerOBJ::draw()
 {
 	if (this->runRotation)
 	{
-		this->modelMatrix = glm::rotate_slow(this->modelMatrix, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
+		this->modelMatrix = glm::rotate_slow(this->modelMatrix, 0.004f, glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 	this->lightRotation += 0.03f;
 
