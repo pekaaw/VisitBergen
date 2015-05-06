@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <string>
+#include <tinyxml2.h>
 #include "..\interfaces\interfaces.h"
 
 class ActorComponent
@@ -9,10 +11,11 @@ class ActorComponent
 
 protected:
 	std::shared_ptr<Actor> owner;
-	std::string componentType;
 
 public:
 	virtual bool dependancyInjection() = 0;
+	virtual const char* getComponentName() = 0;
+	virtual bool preInit(tinyxml2::XMLElement*) = 0;
 	virtual void init() = 0;
 
 	virtual ~ActorComponent(void){}

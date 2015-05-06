@@ -13,12 +13,13 @@ class Actor
 	std::string actorName;
 	std::map<std::string, std::shared_ptr<ActorComponent>> components;
 
-private:
-	bool addComponent(std::string componentType);
-	std::shared_ptr<ActorComponent> getComponent(std::string componentType) const;
+protected:
+	bool addComponent(std::string componentType, std::shared_ptr<ActorComponent> component);
+	void setActorName(std::string name);
 
 public:
 	explicit Actor(const int actorID);
 	const int getActorID() const;
 	const std::string getActorName() const;
+	std::shared_ptr<ActorComponent> getComponent(std::string componentType) const;
 };

@@ -10,15 +10,20 @@ const int Actor::getActorID() const
 	return this->actorID;
 }
 
+void Actor::setActorName(std::string name)
+{
+	this->actorName = name;
+}
+
 const std::string Actor::getActorName() const
 {
 	return this->actorName;
 }
 
-bool addComponent(std::string componentType)
+bool Actor::addComponent(std::string componentType, std::shared_ptr<ActorComponent> component)
 {
+	this->components[componentType] = component;
 	return true;
-	// TODO: finish up
 }
 
 std::shared_ptr<ActorComponent> Actor::getComponent(std::string componentType) const
@@ -29,9 +34,7 @@ std::shared_ptr<ActorComponent> Actor::getComponent(std::string componentType) c
 	{
 		return it->second;
 	}
-	else
-	{
-		return nullptr;
-	}
+	
+	return nullptr;
 }
 

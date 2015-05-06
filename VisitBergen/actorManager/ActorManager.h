@@ -8,16 +8,22 @@
 using namespace tinyxml2;
 
 #include "Actor.h"
+#include "ComponentFactory.h"
+
+class MeshComponent;
 
 class ActorManager
 {
 	std::vector<std::shared_ptr<Actor>> actorList;
 	int nextActorID;
+	ComponentFactory componentFactory;
 
-	explicit ActorManager() : nextActorID(0) {};
 	const int getNextActorID();
+	int createActor(XMLElement* actorDescriptionRoot);
 
 public:
-	int createActor(XMLElement* actorDescriptionRoot);
+
+	explicit ActorManager();
+
 	int createActor(const std::string actorPath);
 };
