@@ -59,10 +59,10 @@ void Renderer::init(void)
 
 	//if (!car->init("assets\\car.obj"))
 	//if (!car->init("assets\\bergen\\bergen_terrain.obj"))
-	if (!car->init("assets\\bergen.obj"))
+	//if (!car->init("assets\\bergen.obj"))
 	//if (!car->init("assets\\teddy.obj"))
 	//if (!car->init("assets\\capsule\\capsule.obj"))
-	//if (!car->init("assets\\cube\\cube.obj"))
+	if (!car->init("assets\\cube\\cube.obj"))
 	//if (!car->init("assets\\sphere\\sphere.obj"))
 	{
 		printf("Car not loaded.");
@@ -146,6 +146,10 @@ void Renderer::display()
 		this->car->draw();
 	}
 	
+	for (auto& it : this->renderables)
+	{
+		it.second->draw();
+	}
 
 
 	glUseProgram(0);
@@ -165,10 +169,35 @@ const std::shared_ptr<Renderer> Renderer::getInstance(void)
 	return Renderer::instance;
 }
 
-GLuint const Renderer::getShaderProgram() const
+std::shared_ptr<ShaderProgram> Renderer::getShaderProgram(std::string name)
 {
-	//return this->shaderProgram;
-	return 0;
+	auto it = this->shaderPrograms.find(name);
+
+	if (it != this->shaderPrograms.end())
+	{
+		// We found the shaderProgram and will return it
+		return it->second;
+	}
+
+	// We did not find it!
+	std::shared_ptr<ShaderProgram> program = this->shaderFactory.makeShaderProgram(name);
+	if (program)
+	{
+		this->shaderPrograms[name] = program;
+		return program;
+	}
+
+	// ShaderProgram not found and could not be made. Make sure we have a default and return that one.
+	assert(!this->shaderPrograms.empty());
+
+	if (!this->shaderPrograms.empty())
+	{
+		return this->shaderPrograms.begin()->second;
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 int const Renderer::getWindowWidth() const
@@ -205,4 +234,29 @@ void Renderer::onAbort()
 	// Release the car object (call destructor if no one else is using it
 	this->car.reset();
 
+}
+
+
+void Renderer::addRenderable(std::string name, std::shared_ptr<RenderableInterface> objectPtr)
+{
+	auto it = this->renderables.find(name);
+
+	if (it == this->renderables.end())
+	{
+		this->renderables[name] = objectPtr;
+		return;
+	}
+
+	printf("The renderable object has already been registered with the renderer!\n");
+}
+
+void Renderer::removeRenderable(std::string name)
+{
+	auto it = this->renderables.find(name);
+
+	if (it != this->renderables.end())
+	{
+		this->renderables.erase(it);
+		printf("The renderable \"%s\" was detached from the render loop.\n", name);
+	}
 }

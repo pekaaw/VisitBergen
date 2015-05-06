@@ -15,6 +15,8 @@
 
 #include "Camera.h"
 #include "..\shader\ShaderFactory.h"
+#include "..\components\MeshComponent.h"
+#include "..\interfaces\RenderableInterface.h"
 
 class Renderer :
 	public Process,
@@ -39,10 +41,12 @@ public:
 
 	static const std::shared_ptr<Renderer> getInstance(void) ;
 
-	GLuint const getShaderProgram() const;
+	std::shared_ptr<ShaderProgram> getShaderProgram(std::string name);
 	int const getWindowWidth() const;
 	int const getWindowHeight() const;
 
+	void addRenderable(std::string name, std::shared_ptr<RenderableInterface> objectPtr);
+	void removeRenderable(std::string name);
 
 protected:
 	virtual void onAbort();
@@ -62,6 +66,9 @@ private:
 
 	// Map with shaderPrograms;
 	std::map<std::string, std::shared_ptr<ShaderProgram>> shaderPrograms;
+
+	// Map with MeshComponents
+	std::map<std::string, std::shared_ptr<RenderableInterface>> renderables;
 
 	/* test with mesh */
 	std::shared_ptr<ContainerOBJ> car;
