@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "Application.h"
+#include "interfaces\Locator.h"
 #include "processes\Timer.h"
 #include "processes\TestProcess.h"
 #include "events\QuitApplication.h"
@@ -39,7 +40,10 @@ int Application::init(int* argc, char** argv)
 	this->processManager = std::make_shared<ProcessManager>();
 	this->inputHandler = InputHandler::getInstance();
 	this->eventManager = EventManager::getInstance();
+	this->actorManager = std::make_shared<ActorManager>();
 	this->renderer = Renderer::getInstance();
+
+	Locator::provideRenderer(this->renderer);
 
 	glutInit(argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
@@ -68,6 +72,8 @@ int Application::execute()
 {
 	std::chrono::time_point<std::chrono::high_resolution_clock> prevTime = std::chrono::high_resolution_clock::now();
 	std::chrono::time_point<std::chrono::high_resolution_clock> currTime;
+
+	this->actorManager->createActor("actors//car.xml");
 
 	std::shared_ptr<Process> timer = std::make_shared<Timer>(2000);
 	std::shared_ptr<Process> testProcess = std::make_shared<TestProcess>();
@@ -126,6 +132,9 @@ int Application::shutdown()
 
 	printf("Shutdown renderer...\n");
 	this->renderer.reset();
+
+	printf("Shutdown ActorManager...\n");
+	this->actorManager.reset();
 
 	printf("Shutdown EventManager...\n");
 	this->eventManager.reset();

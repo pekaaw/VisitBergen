@@ -6,6 +6,7 @@
 #include "eventManager\EventManager.h"
 #include "eventManager\EventListener.h"
 #include "processManager\ProcessManager.h"
+#include "actorManager\ActorManager.h"
 #include "renderer\Renderer.h"
 #include "inputHandler\InputHandler.h"
 
@@ -18,6 +19,7 @@ class Application :
 private:
 	std::shared_ptr<EventManager> eventManager;
 	std::shared_ptr<ProcessManager> processManager;
+	std::shared_ptr<ActorManager> actorManager;
 	std::shared_ptr<Renderer> renderer;
 	//EventManager* eventManager;
 	//ProcessManager* processManager;
