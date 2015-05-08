@@ -14,9 +14,12 @@ class MeshComponent;
 
 class ActorManager
 {
+private:
 	std::vector<std::shared_ptr<Actor>> actorList;
 	int nextActorID;
+
 	ComponentFactory componentFactory;
+	XMLDocument* actorXML;
 
 	const int getNextActorID();
 	int createActor(XMLElement* actorDescriptionRoot);

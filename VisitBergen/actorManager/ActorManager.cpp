@@ -4,7 +4,9 @@
 #include "../components/RenderComponent.h"
 #include "../components/TransformComponent.h"
 
-ActorManager::ActorManager() : nextActorID(0)
+ActorManager::ActorManager() : 
+	nextActorID(0),
+	actorXML(nullptr)
 {
 	this->componentFactory.registerType<MeshComponent>(MeshComponent::componentName);
 	this->componentFactory.registerType<RenderComponent>(RenderComponent::componentName);
@@ -13,11 +15,19 @@ ActorManager::ActorManager() : nextActorID(0)
 
 int ActorManager::createActor(const std::string actorPath)
 {
+	if (!this->actorXML)
+	{
+		this->actorXML = new XMLDocument();
+	}
+	else
+	{
+		assert("How did we come here?" || false);
+		this->actorXML->Clear();
+	}
 
-	XMLDocument actorXML;
-	actorXML.LoadFile(actorPath.c_str());
+	this->actorXML->LoadFile(actorPath.c_str());
 
-	XMLElement* actorDescription = actorXML.RootElement();
+	XMLElement* actorDescription = actorXML->RootElement();
 
 	if (actorDescription == nullptr)
 	{
@@ -80,6 +90,9 @@ int ActorManager::createActor(XMLElement* actorDescriptionRoot)
 	{
 		component.second->init();
 	}
+
+	// now we are finished with the XMLDocument and can safely delete it
+	delete this->actorXML;
 
 	return 0;
 }
