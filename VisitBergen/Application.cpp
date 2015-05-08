@@ -65,6 +65,8 @@ int Application::init(int* argc, char** argv)
 	glutMouseWheelFunc(this->inputHandler->mouseWheelCall);
 	glutMotionFunc(this->inputHandler->motionCall);
 
+	this->renderer->getShaderProgram("phongLighting");
+
 	return 1;
 }
 
