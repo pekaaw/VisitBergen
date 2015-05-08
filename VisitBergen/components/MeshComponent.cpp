@@ -15,7 +15,9 @@ void MeshComponent::init()
 	std::string name = buffer;
 	name += MeshComponent::componentName;
 
-	Locator::getRenderer()->addRenderable(name, std::shared_ptr<RenderableInterface>(this));
+	//TODO: This does not work!!!!!!
+	//Locator::getRenderer()->addRenderable(name, std::shared_ptr<RenderableInterface>(this));
+	Locator::getRenderer()->addRenderable(name, shared_from_this());
 }
 
 void MeshComponent::loadToGPU()

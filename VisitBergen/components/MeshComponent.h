@@ -12,7 +12,7 @@
 #include "..\interfaces\Locator.h"
 #include "..\interfaces\RenderableInterface.h"
 
-class MeshComponent : public ActorComponent, public RenderableInterface
+class MeshComponent : public ActorComponent, public RenderableInterface, public std::enable_shared_from_this<MeshComponent>
 {
 private:
 	std::shared_ptr<TransformComponent> transform;
