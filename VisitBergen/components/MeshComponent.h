@@ -24,11 +24,10 @@ private:
 	std::thread importer;
 	std::atomic<bool> importingModel = true;
 
-	static void loadObjModel(std::shared_ptr<ModelOBJ>&, const char* modelPath, std::atomic<bool>& isComputing);
 	void loadToGPU();
 	void drawComponent();
 
-	void loadModelTest();
+	void loadObjModel();
 
 public:
 	explicit MeshComponent();

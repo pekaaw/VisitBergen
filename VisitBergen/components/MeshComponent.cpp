@@ -38,22 +38,15 @@ void MeshComponent::loadToGPU()
 
 void MeshComponent::drawComponent()
 {
-	std::shared_ptr<Renderer> renderer = Locator::getRenderer();
+	//printf("DRAW!");
+	return;
 }
 
-void MeshComponent::loadObjModel(std::shared_ptr<ModelOBJ>& model, const char* modelPath, std::atomic<bool>& isComputing)
-{
-	std::string path(modelPath);
-	printf("Starting to import %s\n", path.c_str());
-	model->import(path.c_str());
-	printf("Finished loading the model from %s\n", path.c_str());
-	isComputing = false;
-}
-
-void MeshComponent::loadModelTest()
+void MeshComponent::loadObjModel()
 {
 	printf("modelPath: %s\n", this->modelPath);
 	this->model->import(this->modelPath);
+	this->shaderProgram = Locator::getRenderer()->getShaderProgram(this->shaderName);
 	this->importingModel = false;
 }
 
