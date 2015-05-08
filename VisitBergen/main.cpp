@@ -18,6 +18,6 @@ int main(int argc, char** argv)
 
 	application.reset();
 
-	printf("Leaving main(). Goodbye.");
+	printf("Leaving main(). Goodbye.\n");
 	return exitCode;
 }
