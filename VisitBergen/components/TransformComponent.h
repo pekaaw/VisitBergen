@@ -8,17 +8,23 @@
 
 class TransformComponent : public ActorComponent
 {
+private:
+	glm::mat4 transform;
+
 public:
-	TransformComponent(const glm::mat4& bodyTransformation, const glm::mat4& worldTransformation)
+	//TransformComponent(const glm::mat4& bodyTransformation, const glm::mat4& worldTransformation)
+	TransformComponent(const glm::mat4& transform)
 	{
-		this->bodyTransform = bodyTransform;
-		this->worldTransform = worldTransform;
+		this->transform = transform;
+		//this->bodyTransform = bodyTransform;
+		//this->worldTransform = worldTransform;
 	}
 
 	TransformComponent()
 	{
-		this->bodyTransform = glm::mat4();
-		this->worldTransform = glm::mat4();
+		this->transform = glm::mat4();
+		//this->bodyTransform = glm::mat4();
+		//this->worldTransform = glm::mat4();
 	}
 
 	const char* getComponentName(){ return this->componentName; }
@@ -28,6 +34,8 @@ public:
 
 	static const char* componentName;
 
-	glm::mat4 bodyTransform;
-	glm::mat4 worldTransform;
+	const glm::mat4& getTransform() const;
+
+	//glm::mat4 bodyTransform;
+	//glm::mat4 worldTransform;
 };

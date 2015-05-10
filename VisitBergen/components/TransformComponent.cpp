@@ -35,7 +35,13 @@ bool TransformComponent::preInit(tinyxml2::XMLElement* data)
 		printf("creating yawPitchRoll matrix!\n");
 	}
 
-	this->worldTransform = yawPitchRoll * translation;
+	this->transform = yawPitchRoll * translation;
 
 	return true;
+}
+
+// read-only
+const glm::mat4& TransformComponent::getTransform() const
+{
+	return this->transform;
 }
