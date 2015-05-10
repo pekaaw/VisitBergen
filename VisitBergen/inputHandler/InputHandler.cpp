@@ -5,6 +5,7 @@
 #include "..\eventManager\EventManager.h"
 #include "..\events\QuitApplication.h"
 #include "..\events\EventCameraTransform.h"
+#include "..\events\EventCameraTrip.h"
 #include "..\events\EventToggleProjectionMode.h"
 #include "..\events\EventToggleModelRotation.h"
 
@@ -58,6 +59,11 @@ void InputHandler::keyboard(unsigned char key, int x, int y)
 	case 'r':
 		EventManager::getInstance()->fireEvent(std::make_shared<EventToggleModelRotation>());
 		printf("Toggle model rotation.\n");
+		break;
+
+	case 't':
+		EventManager::getInstance()->fireEvent(std::make_shared<EventCameraTrip>());
+		printf("Take a trip!\n");
 		break;
 	}
 }

@@ -6,8 +6,10 @@
 #include "interfaces\Locator.h"
 #include "processes\Timer.h"
 #include "processes\TestProcess.h"
+#include "processes\CameraFlightProcess.h"
 #include "events\QuitApplication.h"
 #include "events\EventCameraTransform.h"
+#include "events\EventCameraTrip.h"
 #include "events\EventToggleProjectionMode.h"
 #include "events\EventToggleModelRotation.h"
 
@@ -85,6 +87,7 @@ int Application::execute()
 	this->processManager->attachProcess(this->renderer);
 
 	this->eventManager->addListener(shared_from_this(), std::make_shared<QuitApplication>());
+	this->eventManager->addListener(shared_from_this(), std::make_shared<EventCameraTrip>());
 	this->eventManager->addListener(this->renderer, std::make_shared<EventCameraTransform>());
 	this->eventManager->addListener(this->renderer, std::make_shared<EventToggleProjectionMode>());
 	this->eventManager->addListener(this->renderer, std::make_shared<EventToggleModelRotation>());
@@ -156,5 +159,10 @@ void Application::handleEvent(const std::shared_ptr<Event>& event_)
 	{
 		quitMe->sayHallo();
 		this->quit = true;
+	}
+
+	if (std::shared_ptr<EventCameraTrip> trip = std::dynamic_pointer_cast<EventCameraTrip>(event_))
+	{
+		this->processManager->attachProcess(std::make_shared<CameraFlightProcess>(3000));
 	}
 }
