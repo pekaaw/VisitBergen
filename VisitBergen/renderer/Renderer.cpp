@@ -33,7 +33,10 @@ void Renderer::init(void)
 {
 	this->Process::init();
 
-	this->camera = std::make_shared<Camera>();
+	if (!this->camera)
+	{
+		this->camera = std::make_shared<Camera>();
+	}
 
 	// Add a shaderProgram to use
 	std::shared_ptr<ShaderProgram> phongLightingProgram = this->shaderFactory.makeShaderProgram("phongLighting");
@@ -167,6 +170,16 @@ const std::shared_ptr<Renderer> Renderer::getInstance(void)
 	}
 
 	return Renderer::instance;
+}
+
+std::shared_ptr<Camera> Renderer::getCamera()
+{
+	if (!this->camera)
+	{
+		this->camera = std::make_shared<Camera>();
+	}
+
+	return this->camera;
 }
 
 std::shared_ptr<ShaderProgram> Renderer::getShaderProgram(std::string name)

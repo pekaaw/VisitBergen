@@ -30,6 +30,11 @@ public:
 		this->viewMatrix = glm::lookAt(position, target, upVector);
 	}
 
+	void setViewMatrix(const glm::vec3& position, const glm::vec3& target)
+	{
+		this->viewMatrix = glm::lookAt(position, target, this->upVector);
+	}
+
 	glm::mat4 transform(const glm::mat4& matrix)
 	{
 		this->viewMatrix *= matrix;

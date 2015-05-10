@@ -41,6 +41,8 @@ public:
 
 	static const std::shared_ptr<Renderer> getInstance(void) ;
 
+	std::shared_ptr<Camera> getCamera();
+
 	std::shared_ptr<ShaderProgram> getShaderProgram(std::string name);
 	int const getWindowWidth() const;
 	int const getWindowHeight() const;
