@@ -5,6 +5,12 @@ void ShaderProgram::initUniform(const std::string& name)
 	uniformIDs[name] = glGetUniformLocation(shaderProgram, name.c_str());
 }
 
+void ShaderProgram::initTextureUniforms()
+{
+	initUniform("NoTexture");
+	initUniform("TextureSampler");
+}
+
 void ShaderProgram::initMaterialUniforms()
 {
 	initUniform("material.ambient");
@@ -41,7 +47,6 @@ void ShaderProgram::initModelViewProjectionUniforms()
 	initUniform("ViewMatrix");
 	initUniform("ProjectionMatrix");
 	initUniform("NormalMatrix");
-	initUniform("TextureSampler");
 }
 
 void ShaderProgram::initAttribLocation(const std::string &name)

@@ -15,6 +15,7 @@ struct ShaderProgram
 	std::map<std::string, GLint> uniformIDs;
 	std::map<std::string, GLint> attribLocations;
 
+	void initTextureUniforms();
 	void initMaterialUniforms();
 	void initLightUniforms();
 	void initModelViewProjectionUniforms();
