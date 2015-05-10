@@ -13,7 +13,7 @@ std::shared_ptr<ShaderProgram> ShaderFactory::makeShaderProgram(const std::strin
 
 		if (program->shaderProgram == 0)
 		{
-			printf("Error: ShaderFactory::makeShaderProgram failed to initialize shader program (%s).\n", shaderName.c_str());
+			printf("Warning: ShaderFactory failed to initialize shader: (%s).\n", shaderName.c_str());
 			return nullptr;
 		}
 
@@ -21,12 +21,15 @@ std::shared_ptr<ShaderProgram> ShaderFactory::makeShaderProgram(const std::strin
 		//program->attribLocations["vertex"] = glGetAttribLocation(program->shaderProgram, "vertex");
 		//program->attribLocations["normal"] = glGetAttribLocation(program->shaderProgram, "normal");
 
+		program->initTextureUniforms();
 		program->initMaterialUniforms();
 		program->initLightUniforms();
 		program->initModelViewProjectionUniforms();
 
 		GLState nullState;
 		program->updateAllUniforms(nullState);
+
+		printf("%s has been loaded as a proper ShaderProgram.\n", shaderName.c_str());
 
 		return program;
 	}
@@ -39,7 +42,43 @@ GLuint ShaderFactory::initGLProgram(const std::string &shaderProgram)
 	GLuint glProgram = glCreateProgram();
 	if (glProgram == 0)
 	{
-		printf("Error: ShaderFactory::initGLProgram cannot create shader program (%s).\n", shaderProgram.c_str());
+		GLenum error = glGetError();
+
+		std::string errorMsg = "Could not create a new shader program. ";
+
+		switch (error)
+		{
+			case GL_NO_ERROR:
+				errorMsg += "No Error\n";
+				break;
+			case GL_INVALID_ENUM:
+				errorMsg += "An unacceptable value is specified for an enumerated argument.\n";
+				break;
+			case GL_INVALID_VALUE:
+				errorMsg += "A numeric argument is out of range.\n";
+				break;
+			case GL_INVALID_OPERATION:
+				errorMsg += "The specified operation has been performed out of context, or is not allowed in the current state.\n";
+				break;
+			case GL_INVALID_FRAMEBUFFER_OPERATION:
+				errorMsg += "The command is trying to render to or read from the framebuffer while the currently bound framebuffer is not framebuffer complete (i.e. the return value from glCheckFramebufferStatus is not GL_FRAMEBUFFER_COMPLETE).\n";
+				break;
+			case GL_OUT_OF_MEMORY:
+				errorMsg += "There is not enough memory left to execute the command.\n";
+				break;
+			case GL_STACK_UNDERFLOW:
+				errorMsg += "An attempt has been made to perform an operation that would cause an internal stack to underflow.\n";
+				break;
+			case GL_STACK_OVERFLOW:
+				errorMsg += "An attempt has been made to perform an operation that would cause an internal stack to overflow.\n";
+				break;
+			default:
+				errorMsg += "Reason unknown (default).\n";
+		}
+
+
+		printf("Error: ShaderFactory: Program cannot be created (%s).\n", shaderProgram.c_str());
+		printf("%s\n", errorMsg.c_str());
 		return 0;
 	}
 
@@ -47,7 +86,7 @@ GLuint ShaderFactory::initGLProgram(const std::string &shaderProgram)
 	GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
 	if (vertShader == 0 || fragShader == 0)
 	{
-		printf("Error: ShaderFacctory::initGLProgram unable to create shader objects.");
+		printf("Error: ShaderFacctory: Unable to create shader objects.");
 		return 0;
 	}
 
@@ -57,7 +96,7 @@ GLuint ShaderFactory::initGLProgram(const std::string &shaderProgram)
 	int vsLength = static_cast<int>(vertexShaderSourceCode.length());
 	if (vsLength == 0)
 	{
-		printf("Error: ShaderFactory::initGLProgram received empty vertex shader.\n");
+		printf("Error: ShaderFactory: Received empty vertex shader.\n");
 		return 0;
 	}
 
