@@ -66,11 +66,20 @@ int Application::init(int* argc, char** argv)
 	glutMouseFunc(this->inputHandler->mouseCall);
 	glutMouseWheelFunc(this->inputHandler->mouseWheelCall);
 	glutMotionFunc(this->inputHandler->motionCall);
+	glutDisplayFunc(this->empty);
+	glutReshapeFunc(this->reshape);
 
 	this->renderer->getShaderProgram("phongLighting");
 
 	return 1;
 }
+
+void Application::reshape(int width, int height)
+{
+	Locator::getRenderer()->reshape(width, height);
+}
+
+void Application::empty(){}
 
 int Application::execute()
 {

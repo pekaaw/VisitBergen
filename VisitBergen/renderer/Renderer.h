@@ -50,6 +50,8 @@ public:
 	void addRenderable(std::string name, std::shared_ptr<RenderableInterface> objectPtr);
 	void removeRenderable(std::string name);
 
+	void reshape(int width, int height);
+
 protected:
 	virtual void onAbort();
 
@@ -59,6 +61,7 @@ private:
 	std::shared_ptr<Camera> camera;
 
 	bool usePerspectiveMode;
+	ProjectionMode currentProjectionMode;
 
 	int windowWidth;
 	int windowHeight;

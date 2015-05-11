@@ -32,6 +32,8 @@ private:
 	char* windowTitle = "Visit Bergen\0";
 
 	void handleEvent(const std::shared_ptr<Event>& event);
+	static void reshape(int width, int height);
+	static void empty();
 
 public:
 	Application();

@@ -213,6 +213,14 @@ std::shared_ptr<ShaderProgram> Renderer::getShaderProgram(std::string name)
 	}
 }
 
+void Renderer::reshape(int width, int height)
+{
+	this->windowWidth = width;
+	this->windowHeight = height;
+	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+	this->setProjectionMode(this->currentProjectionMode);
+}
+
 int const Renderer::getWindowWidth() const
 {
 	return this->windowWidth;
@@ -225,20 +233,29 @@ int const Renderer::getWindowHeight() const
 
 void Renderer::setProjectionMode(Renderer::ProjectionMode mode)
 {
+	glm::mat4 projectionMatrix;
+
 	switch (mode)
 	{
 	default:
 	case PERSPECTIVE:
-		this->camera->setProjectionMatrix(glm::perspective(45.0f, float(this->windowWidth) / this->windowWidth, 0.1f, 100.0f));
-		this->shaderPrograms["phongLighting"]->updateProjectionUniform(this->camera->getProjectionMatrix());
-		//this->projectionMatrix = glm::perspective(45.0f, float(this->windowWidth) / this->windowWidth, 0.1f, 100.0f);
+		this->currentProjectionMode = mode;
+		this->camera->setProjectionMatrix(glm::perspective(45.0f, float(this->windowWidth) / this->windowHeight, 0.1f, 100.0f));
+		projectionMatrix = this->camera->getProjectionMatrix();
 		break;
 	case ORTHOGRAPHIC:
-		float height = float(this->windowHeight) / float(this->windowWidth) * 0.5f;
-		this->camera->setProjectionMatrix(glm::ortho(-0.5f, 0.5f, -height, height, 0.1f, 100.0f));
-		this->shaderPrograms["phongLighting"]->updateProjectionUniform(this->camera->getProjectionMatrix());
-		//this->projectionMatrix = glm::ortho(-0.5f, 0.5f, -height, height, 0.1f, 100.0f);
+		this->currentProjectionMode = mode;
+		float aspect = float(this->windowHeight) / float(this->windowWidth);
+		float halfWidth = 0.5;
+		this->camera->setProjectionMatrix(glm::ortho(-halfWidth, halfWidth, -halfWidth * aspect, halfWidth * aspect, 0.1f, 100.0f));
+		projectionMatrix = this->camera->getProjectionMatrix();
 		break;
+	}
+
+	// Update projection uniform matrix for all shaderprograms
+	for (auto it : this->shaderPrograms)
+	{
+		it.second->updateProjectionUniform(projectionMatrix);
 	}
 }
 
