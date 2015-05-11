@@ -5,8 +5,7 @@
   </TransformComponent>
 
   <MeshComponent>
-    <Model format="obj">assets\\car.obj</Model>
-    <ShaderProgram>phongLighting</ShaderProgram>
+    <Model format="obj">assets\\teddy.obj</Model>
   </MeshComponent>
-  
+
 </Actor>

@@ -1,0 +1,11 @@
+<Actor type="Map" resource="actors\map.xml">
+
+  <TransformComponent>
+    <Position x="0" y="0" z="0" />
+  </TransformComponent>
+
+  <MeshComponent>
+    <Model format="obj">assets\\bergen.obj</Model>
+  </MeshComponent>
+  
+</Actor>
