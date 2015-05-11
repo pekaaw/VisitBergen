@@ -93,6 +93,7 @@ int ActorManager::createActor(XMLElement* actorDescriptionRoot)
 
 	// now we are finished with the XMLDocument and can safely delete it
 	delete this->actorXML;
+	this->actorXML = nullptr;
 
 	return 0;
 }
