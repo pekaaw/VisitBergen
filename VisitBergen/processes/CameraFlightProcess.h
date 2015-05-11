@@ -24,8 +24,5 @@ public:
 	~CameraFlightProcess(void){};
 
 	virtual void init(void);
-
 	virtual void update(unsigned long deltaMs);
-
-
 };

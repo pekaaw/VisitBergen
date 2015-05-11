@@ -25,10 +25,10 @@ CameraFlightProcess::CameraFlightProcess(unsigned long ms)
 	//	0.3f, 0.8f, 0.2f, 0.0f
 	//};
 	
-	float pointMatrix[16] = {
-			-0.3f, 2.0f, -2.0f, 0.3f,			// x0, x1, x2, x3
-			0.2f, 0.7f, 0.7f, 0.2f,			// y0, y1, y2, y3
-			1.0f, 2.0f, 2.0f, 1.0f,			// z0, z1, z2, z3
+	float pointMatrix[16] = {		// COLUMN MAJOR
+			-0.3f, 5.0f, -5.0f, 0.3f,		// x0, x1, x2, x3
+			-0.2f, 0.7f, -0.7f, 0.5f,			// y0, y1, y2, y3
+			1.0f, -2.0f, -2.0f, 1.0f,			// z0, z1, z2, z3
 			0.0f, 0.0f, 0.0f, 0.0f
 		};
 	this->pointMatrix = glm::make_mat4(pointMatrix);
