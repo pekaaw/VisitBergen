@@ -94,7 +94,7 @@ void MeshComponent::loadToGPU()
 
 	this->importer.join();
 
-	printf("\a %s loaded into memory. Starting normalization.\n", this->modelPath);
+	printf("%s loaded into memory. Starting normalization.\n", this->modelPath);
 
 	if (this->doNormalization)
 	{
@@ -108,7 +108,7 @@ void MeshComponent::loadToGPU()
 			this->model->getNumberOfVertices());
 	}
 
-	printf("\a %s normalized. Start loading to GPU.\n", this->modelPath);
+	printf("%s normalized. Start loading to GPU.\n", this->modelPath);
 
 	GLuint program = this->shaderProgram->shaderProgram;
 	glUseProgram(program);
@@ -186,7 +186,7 @@ void MeshComponent::loadToGPU()
 	}
 
 	// TODO: Load data to GPU!
-	printf("\a Done loading \'%s\' to GPU =D\n", this->modelPath);
+	printf("Done loading \'%s\' to GPU =D\n", this->modelPath);
 
 	this->callDrawMethod = &MeshComponent::drawComponent;
 }

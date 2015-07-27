@@ -178,7 +178,7 @@ void SkyBoxComponent::loadToGPU()
 	this->modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(100.0f));
 
 	// TODO: Load data to GPU!
-	printf("\a Done loading \'%s\' to GPU =D\n", this->modelPath);
+	printf("Done loading \'%s\' to GPU =D\n", this->modelPath);
 
 }
 
