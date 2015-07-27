@@ -1,0 +1,80 @@
+q	Quit application
+r	Toggle rotation of selected models (car and teddybear)
+t	Take a trip through the scene
+p	Toggle between orthographic and perspective projection
+
+
+
+Features of the application:
+
+- Event system
+	Entities registers as listener for specific events.
+	EventManager can be called to fire events, and listeners will be notified
+
+- Input Handler
+	Takes care of the input and launches propriate events.
+
+- Actor system
+	An actorManager can create actors from xml files.
+	Actors are created and attached different kinds of components.
+	Components can rely on other components and the creation of an actor fails
+	if some necessary components are missing. This is possible due to 
+	dependancy injection.
+
+- Process system
+	A ProcessManager can hold different types of Processes that can be
+	launched and are discarded when done.
+
+- Singleton design pattern
+	InputHandler, eventManager and Renderer do all use the singleton pattern
+	to ensure that there is only one of its entity in the system.
+
+- Locator design pattern
+	This is a design pattern that is kind of similar to the singleton pattern,
+	but it gathers different services in one particular place, a class with
+	static getters. The best with the Locator pattern is that the locator can
+	use interfaces to deliver different types of services.
+
+- Renderer
+	A class that has lists of shaders and a list of different objects that is
+	ready for rendering. Those have an interface called Renderables.
+
+- ShaderPrograms and factory
+	A shaderprogram has the responsibility of setting different states for OpenGL.
+	A shaderFactory can create a ready ShaderProgram object from the name 
+	of the shader in form of a string.
+
+
+Shaders:
+	PhongShading:
+		Vertex shader:	If vertex.y <= 0 (sea) the vertex is changed a little
+				to animate the sea.
+		Fragment shader:
+			Using three lights. One headlight, one directional light and
+			one moving point light. The moving point light uses an
+			attenuation factor to fade out away from the source.
+			If we have a texture, we get color from it, else we get
+			color from the material. If the fragment is part of the sea,
+			We add some additional color according to wave height.
+			At last gamma correction is applied (constant correction, same
+			as for CRT screens).
+
+	ToonShading:
+		Vertex shader:
+			Not so fancy: Makes sure texture coordinates, vertex position
+			and vertex normal are ready for the fragment shader.
+
+		Fragment shader:
+			Add headlight, directional light and point light to the
+			scene with dot product thresholds to create a toon shading
+			effect. For rounded objects (smooth normal transitions), there
+			is some outlining. At last there is gamma correction also.
+
+Lights:
+	Headlight
+	Directional light
+	Pointlight that is moving (look closer if it is hard to see, it is quite slow,
+		to behave a bit like the sun.
+	
+				
+

@@ -1,0 +1,16 @@
+<Actor type="SkyBoxDay" resource="actors\SkyBoxDay.xml">
+
+  <SkyBoxComponent>
+    <Model format="obj">assets\\box.obj</Model>
+    <ShaderProgram>skyBoxShader</ShaderProgram>
+    <SkyBoxSides>
+      <NegativeX path="assets\\SkyBoxDay\\NegX.png" />
+      <PositiveX path="assets\\SkyBoxDay\\PosX.png" />
+      <NegativeY path="assets\\SkyBoxDay\\NegY.png" />
+      <PositiveY path="assets\\SkyBoxDay\\PosY.png" />
+      <NegativeZ path="assets\\SkyBoxDay\\NegZ.png" />
+      <PositiveZ path="assets\\SkyBoxDay\\PosZ.png" />
+    </SkyBoxSides>
+  </SkyBoxComponent>
+
+</Actor>

@@ -10,6 +10,7 @@
 #include "events\QuitApplication.h"
 #include "events\EventCameraTransform.h"
 #include "events\EventCameraTrip.h"
+#include "events\EventPauseTrip.h"
 #include "events\EventToggleProjectionMode.h"
 #include "events\EventToggleModelRotation.h"
 
@@ -46,6 +47,7 @@ int Application::init(int* argc, char** argv)
 	this->renderer = Renderer::getInstance();
 
 	Locator::provideRenderer(this->renderer);
+	Locator::provideActorManager(this->actorManager);
 
 	glutInit(argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
@@ -86,7 +88,19 @@ int Application::execute()
 	std::chrono::time_point<std::chrono::high_resolution_clock> prevTime = std::chrono::high_resolution_clock::now();
 	std::chrono::time_point<std::chrono::high_resolution_clock> currTime;
 
+	this->actorManager->createActor("actors//SkyBoxDay.xml");
+	this->actorManager->createActor("actors//map.xml");
 	this->actorManager->createActor("actors//car.xml");
+	this->actorManager->createActor("actors//sphere.xml");
+	this->actorManager->createActor("actors//teddy.xml");
+	this->actorManager->createActor("actors//teddy2.xml");
+	this->actorManager->createActor("actors//cow.xml");
+	this->actorManager->createActor("actors//cow2.xml");
+	this->actorManager->createActor("actors//cow3.xml");
+	this->actorManager->createActor("actors//cow4.xml");
+	this->actorManager->createActor("actors//cow5.xml");
+	this->actorManager->createActor("actors//cow6.xml");
+	this->actorManager->createActor("actors//cow7.xml");
 
 	std::shared_ptr<Process> timer = std::make_shared<Timer>(2000);
 	std::shared_ptr<Process> testProcess = std::make_shared<TestProcess>();
@@ -100,6 +114,8 @@ int Application::execute()
 	this->eventManager->addListener(this->renderer, std::make_shared<EventCameraTransform>());
 	this->eventManager->addListener(this->renderer, std::make_shared<EventToggleProjectionMode>());
 	this->eventManager->addListener(this->renderer, std::make_shared<EventToggleModelRotation>());
+
+	this->processManager->attachProcess(std::make_shared<CameraFlightProcess>(500));
 
 	unsigned long duration;
 	unsigned long prefDuration = unsigned long (1000 / this->preferredFPS);
@@ -172,6 +188,8 @@ void Application::handleEvent(const std::shared_ptr<Event>& event_)
 
 	if (std::shared_ptr<EventCameraTrip> trip = std::dynamic_pointer_cast<EventCameraTrip>(event_))
 	{
-		this->processManager->attachProcess(std::make_shared<CameraFlightProcess>(3000));
+		std::shared_ptr<CameraFlightProcess> flight = std::make_shared<CameraFlightProcess>(15000);
+		this->eventManager->addListener(flight, std::make_shared<EventPauseTrip>());
+		this->processManager->attachProcess(flight);
 	}
 }

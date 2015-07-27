@@ -1,11 +1,13 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include <glm\gtx\euler_angles.hpp>
 
 #include "InputHandler.h"
 #include "..\eventManager\EventManager.h"
 #include "..\events\QuitApplication.h"
 #include "..\events\EventCameraTransform.h"
 #include "..\events\EventCameraTrip.h"
+#include "..\events\EventPauseTrip.h"
 #include "..\events\EventToggleProjectionMode.h"
 #include "..\events\EventToggleModelRotation.h"
 
@@ -65,6 +67,12 @@ void InputHandler::keyboard(unsigned char key, int x, int y)
 		EventManager::getInstance()->fireEvent(std::make_shared<EventCameraTrip>());
 		printf("Take a trip!\n");
 		break;
+	case ' ':
+		EventManager::getInstance()->fireEvent(std::make_shared<EventPauseTrip>());
+		printf("Toggle trip pause!\n");
+		break;
+	case 'f':
+		glutFullScreenToggle();
 	}
 }
 
@@ -100,11 +108,14 @@ void InputHandler::motion(int x, int y)
 	if (this->mouseButton == GLUT_LEFT_BUTTON)
 	{
 		glm::mat4 rx, ry;
-		rx = glm::rotate(rx, -0.001f * (this->mouseY - y), glm::vec3(1.0f, 0.0f, 0.0f));
-		ry = glm::rotate(ry, -0.001f * (this->mouseX - x), glm::vec3(0.0f, 1.0f, 0.0f));
+		//rx = glm::rotate(rx, -0.001f * (this->mouseY - y), glm::vec3(1.0f, 0.0f, 0.0f));
+		//ry = glm::rotate(ry, -0.001f * (this->mouseX - x), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		rx = glm::yawPitchRoll(-0.001f * (this->mouseX - x), 0.001f * (this->mouseY - y), 0.0f);
 
 		std::shared_ptr<EventCameraTransform> cameraTransform = std::make_shared<EventCameraTransform>();
-		cameraTransform->setTransform(rx * ry);
+		//cameraTransform->setTransform(rx * ry);
+		cameraTransform->setTransform(rx);
 
 		EventManager::getInstance()->fireEvent(cameraTransform);
 	}
@@ -113,8 +124,9 @@ void InputHandler::motion(int x, int y)
 	{
 		glm::mat4 translate;
 		glm::vec3 direction;
-		direction.x = -0.001 * (this->mouseX - x);
-		direction.y = 0.001 * (this->mouseY - y);
+		direction.x = -0.1 * (this->mouseX - x);
+		direction.z = 0.1 * (this->mouseY - y);
+		//translate = glm::mat4(direction.x, 0.0f, 0.0f, 0.0f, 0.0f, direction.y, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 		translate = glm::translate(translate, direction);
 		std::shared_ptr<EventCameraTransform> cameraTransform = std::make_shared<EventCameraTransform>();
 		cameraTransform->setTransform(translate);

@@ -1,0 +1,13 @@
+<Actor type="Sea" resource="actors\sea.xml">
+
+  <TransformComponent>
+    <Position x="0" y="0" z="0" />
+    <Scaling>100</Scaling>
+  </TransformComponent>
+
+  <MeshComponent>
+    <Model format="obj">assets\\sea.obj</Model>
+    <ShaderProgram>simplePhong</ShaderProgram>
+  </MeshComponent>
+
+</Actor>

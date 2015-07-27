@@ -29,6 +29,7 @@ struct Light
 in vec3 N;
 in vec3 v;
 in vec2 textureCoordinates;
+in float isSea;
 
 // Sampler to access texture
 uniform sampler2D TextureSampler;
@@ -40,6 +41,7 @@ uniform Light directionalLight;
 uniform Light movingLight;
 uniform mat4 ModelMatrix;
 uniform mat4 ViewMatrix;
+uniform float WaveTime;
 
 out vec4 outputColor;
 
@@ -95,12 +97,22 @@ void main()
 		vec3 R_movingLight = normalize(reflect(movingLightDirection, N));
 		float movingLight_RdotL = max(dot(-movingLightDirection, R_movingLight), 0);
 
-		float distanceRatio = movingLightDistance / movingLight.litRadius;
+		float cutoffThreshold = 0.00001;
+		float dmax = movingLight.lightRadius * (sqrt(movingLight.intensities.y / cutoffThreshold) - 1);
+		float distanceRatio = movingLightDistance / dmax;
 		float d = movingLightDistance / (1 - distanceRatio * distanceRatio);
 		float r = movingLight.lightRadius;
 		float attenuation = 1 / ((d/r + 1) * (d/r + 1));
+		attenuation = (attenuation - cutoffThreshold) / (1 - cutoffThreshold);
+		attenuation = max(attenuation, 0);
+		attenuation /= 2;
+		//attenuation = 1 / (1 + movingLightDistance * movingLightDistance);
+		//attenuation = movingLightDistance;
 
-	vec3 movAmbient = movingLight.ambient * attenuation;
+	//vec3 movAmbient = movingLight.ambient * movingLight.intensities.x * attenuation;
+	//vec3 movDiffuse = movingLight.diffuse * movingLight_NdotL * movingLight.intensities.y * attenuation;
+	//vec3 movSpecular = clamp(movingLight.specular * movingLight.intensities.z * attenuation * movingLight_RdotL, 0.0f, 1.0f) * 0.5f;
+	vec3 movAmbient = movingLight.ambient * movingLight.intensities.x;
 	vec3 movDiffuse = movingLight.diffuse * movingLight_NdotL * attenuation;
 	vec3 movSpecular = clamp(movingLight.specular * attenuation * movingLight_RdotL, 0.0f, 1.0f) * 0.5f;
 
@@ -124,8 +136,37 @@ void main()
 
 	vec3 specular = (material.specular * clamp(headSpecular, 0.0f, 1.0f)) + (material.specular * clamp(dirSpecular, 0.01f, 1.0f)) + (material.specular * movSpecular);
 
+
+	// Do gamma correction
+	vec4 gamma = vec4(1.0/2.2);
+	vec4 finalColor = vec4(ambient,1) + diffuse + vec4(specular, 1);
+	//finalColor = pow(finalColor, gamma);
+
+	if(isSea > 0.9f)
+	{
+		float factor = clamp(cos(v.y * WaveTime), 0.0f, 0.5f);
+		//finalColor.xyz *= 0.5; // + factor;
+//		finalColor.xyz += vec3(0.0f, 0.0f, 1.0f) * factor;
+//		finalColor.xyz *= 0.5 + clamp(cos(v.y * WaveTime), 0.0f, 1.0f);
+//		finalColor.xyz *= 0.5 + vec3(0.1f, 0.5f, 1.0f) * sin(v.y * WaveTime);
+//		outputColor.w = sin(v.y * WaveTime);
+		if(v.y > 0.1f)
+			finalColor *= 1 - vec4(0.6f, 0.82f, 0.8f, 1.0f);
+				//153:208:205
+	//	else if(v.y > -0.01f)
+	//		finalColor = vec4(0.0f, 0.55f, 0.73f, 1.0f);
+				//0:141:186
+		//else
+		else if(v.y < -0.1f)
+		finalColor *= vec4(0.0f, 0.41f, 0.58f, 1.0f);
+	//			//0:105:148
+	}
+
 	// Calculate final color
-	outputColor = vec4(ambient,1) + diffuse + vec4(specular, 1);
+	//outputColor = vec4(ambient,1) + diffuse + vec4(specular, 1);
+	outputColor = pow(finalColor, gamma);
+
+	//outputColor = diffuse + vec4(specular, 1);
 	//outputColor = vec4(headAmbient, 1.0f);
 	//outputColor = vec4(0.0f, 1.0f, 1.0f, 1.0f);
 }

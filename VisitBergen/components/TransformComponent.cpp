@@ -6,6 +6,7 @@ bool TransformComponent::preInit(tinyxml2::XMLElement* data)
 {
 	glm::mat4 translation;
 	glm::mat4 yawPitchRoll;
+	glm::mat4 scaling;
 
 	tinyxml2::XMLElement* position = data->FirstChildElement("Position");
 	if (position)
@@ -35,7 +36,29 @@ bool TransformComponent::preInit(tinyxml2::XMLElement* data)
 		printf("creating yawPitchRoll matrix!\n");
 	}
 
-	this->transform = yawPitchRoll * translation;
+	tinyxml2::XMLElement* scale = data->FirstChildElement("Scaling");
+	if (scale)
+	{
+		glm::vec3 scaleVector;
+
+		// Default scale to 1. If query successful, the scale is updated.
+		float total = 1;
+		tinyxml2::XMLError msg = scale->QueryFloatText(&total);
+		scaleVector = glm::vec3(total, total, total);
+
+		// If the attributes are set, the corresponding dimension are updated.
+		scale->QueryFloatAttribute("x", &scaleVector.x);
+		scale->QueryFloatAttribute("y", &scaleVector.y);
+		scale->QueryFloatAttribute("z", &scaleVector.z);
+
+		// create the scaling matrix!
+		scaling = glm::scale(glm::mat4(1.0f), scaleVector);
+		printf("creating scaling matrix!\n");
+	}
+
+	// set the final transform matrix
+//	this->transform = scaling * yawPitchRoll * translation;
+	this->transform = translation * yawPitchRoll * scaling;
 
 	return true;
 }
@@ -44,4 +67,9 @@ bool TransformComponent::preInit(tinyxml2::XMLElement* data)
 const glm::mat4& TransformComponent::getTransform() const
 {
 	return this->transform;
+}
+
+void TransformComponent::setTransform(glm::mat4& matrix)
+{
+	this->transform = matrix;
 }

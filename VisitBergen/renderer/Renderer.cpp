@@ -21,12 +21,14 @@ Renderer::Renderer() :
 	//uTextureSampler(-1),
 	usePerspectiveMode(true),
 	windowWidth(800),
-	windowHeight(600)
+	windowHeight(600),
+	lightRotation(0.0f)
 {
 }
 
 Renderer::~Renderer()
 {
+	this->renderables.clear();
 }
 
 void Renderer::init(void)
@@ -36,39 +38,6 @@ void Renderer::init(void)
 	if (!this->camera)
 	{
 		this->camera = std::make_shared<Camera>();
-	}
-
-	// Add a shaderProgram to use
-	std::shared_ptr<ShaderProgram> phongLightingProgram = this->shaderFactory.makeShaderProgram("phongLighting");
-	//std::shared_ptr<ShaderProgram> phongLightingProgram = this->shaderFactory.makeShaderProgram("toonShading");
-	if (!phongLightingProgram)
-	{
-		// Initialization failed, notify ProcessManager that process failed...
-		//Process::fail();
-		return;
-	}
-
-	this->shaderPrograms["phongLighting"] = phongLightingProgram;
-
-
-	if (!this->car)
-	{
-		car = std::make_shared<ContainerOBJ>();
-		car->setShaderProgram(this->shaderPrograms["phongLighting"]);
-		GLState state;
-		state.viewMatrix = this->camera->getViewMatrix();
-		this->shaderPrograms["phongLighting"]->updateAllUniforms(state);
-	}
-
-	//if (!car->init("assets\\car.obj"))
-	//if (!car->init("assets\\bergen\\bergen_terrain.obj"))
-	//if (!car->init("assets\\bergen.obj"))
-	//if (!car->init("assets\\teddy.obj"))
-	//if (!car->init("assets\\capsule\\capsule.obj"))
-	if (!car->init("assets\\cube\\cube.obj"))
-	//if (!car->init("assets\\sphere\\sphere.obj"))
-	{
-		printf("Car not loaded.");
 	}
 
 	glUseProgram(0);
@@ -91,9 +60,16 @@ void Renderer::handleEvent(const std::shared_ptr<Event>& event_)
 {
 	if (std::shared_ptr<EventCameraTransform> transformEvent = std::dynamic_pointer_cast<EventCameraTransform>(event_))
 	{
-		glm::mat4 viewMatrix = this->camera->transform(transformEvent->getTransform());
-		this->shaderPrograms["phongLighting"]->updateViewUniform(viewMatrix);
-		//printf("Renderer received CameraTransform\n");
+		glm::mat4 transform = this->camera->transform(transformEvent->getTransform());
+		glm::mat4 view = this->camera->getViewMatrix();
+		view[0][2] += transform[0][0];	// add x from vector to view direction
+		view[2][2] += transform[0][2];	// add z from vector to view direction
+		
+
+		for (auto it : this->shaderPrograms)
+		{
+			it.second->updateViewUniform(view);
+		}
 	}
 
 	else if (std::shared_ptr<EventToggleProjectionMode> projectionEvent = std::dynamic_pointer_cast<EventToggleProjectionMode>(event_))
@@ -112,7 +88,23 @@ void Renderer::handleEvent(const std::shared_ptr<Event>& event_)
 
 	else if (std::shared_ptr<EventToggleModelRotation> toggleEvent = std::dynamic_pointer_cast<EventToggleModelRotation>(event_))
 	{
-		this->car->toggleRotation();
+		// Call some code to rotate a model
+		std::shared_ptr<Actor> teddy2 = Locator::getActorManager()->getActor("Teddy2");
+		if (teddy2)
+		{
+			std::shared_ptr<MeshComponent> component = std::static_pointer_cast<MeshComponent>(teddy2->getComponent("MeshComponent"));
+			if (component)
+				component->toggleRotation();
+		}		
+		
+		// Call some code to rotate a model
+		std::shared_ptr<Actor> car = Locator::getActorManager()->getActor("Car");
+		if (car)
+		{
+			std::shared_ptr<MeshComponent> component = std::static_pointer_cast<MeshComponent>(car->getComponent("MeshComponent"));
+			if (component)
+				component->toggleRotation();
+		}
 	}
 }
 
@@ -140,15 +132,20 @@ void Renderer::display()
 	frameState.viewMatrix = this->camera->getViewMatrix();
 	frameState.projectionMatrix = this->camera->getProjectionMatrix();
 
-	this->shaderPrograms["phongLighting"]->updateModelViewProjectionUniforms(frameState);
+	this->lightRotation += 0.01;
+	glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), this->lightRotation, glm::vec3(0.0f, 1.0f, 0.0f));
+	frameState.movingLight.position = rotation * frameState.movingLight.position;
 
-
-	// TODO: Do amazing stuff by rendering!
-	if (this->car)
+	// Update modelViewProjectionMatrices and lights for all the shaderprograms
+	for (auto it : this->shaderPrograms)
 	{
-		this->car->draw();
+		glUseProgram(it.second->shaderProgram);
+		it.second->updateLightUniforms(frameState);
+		it.second->updateModelViewProjectionUniforms(frameState);
+		glUniform1f(it.second->uniformIDs["WaveTime"], this->lightRotation);
 	}
-	
+
+	// Call all renderable objects draw method	
 	for (auto& it : this->renderables)
 	{
 		it.second->draw();
@@ -193,15 +190,17 @@ std::shared_ptr<ShaderProgram> Renderer::getShaderProgram(std::string name)
 	}
 
 	// We did not find it!
-	std::shared_ptr<ShaderProgram> program = this->shaderFactory.makeShaderProgram(name);
-	if (program)
+	if (name.length() > 0)
 	{
-		this->shaderPrograms[name] = program;
-		return program;
+		std::shared_ptr<ShaderProgram> program = this->shaderFactory.makeShaderProgram(name);
+		if (program)
+		{
+			this->shaderPrograms[name] = program;
+			return program;
+		}
 	}
 
 	// ShaderProgram not found and could not be made. Make sure we have a default and return that one.
-	assert(!this->shaderPrograms.empty());
 
 	if (!this->shaderPrograms.empty())
 	{
@@ -209,6 +208,10 @@ std::shared_ptr<ShaderProgram> Renderer::getShaderProgram(std::string name)
 	}
 	else
 	{
+		assert(!this->shaderPrograms.empty()); 
+		// We should not get here. If that is the case, we have tried to access
+		// a shader without loading one. A solution is to load a shader we will
+		// be using,or assuming we will use, so that it can be used as default.
 		return nullptr;
 	}
 }
@@ -240,7 +243,7 @@ void Renderer::setProjectionMode(Renderer::ProjectionMode mode)
 	default:
 	case PERSPECTIVE:
 		this->currentProjectionMode = mode;
-		this->camera->setProjectionMatrix(glm::perspective(45.0f, float(this->windowWidth) / this->windowHeight, 0.1f, 100.0f));
+		this->camera->setProjectionMatrix(glm::perspective(45.0f, float(this->windowWidth) / this->windowHeight, 0.1f, 10000.0f));
 		projectionMatrix = this->camera->getProjectionMatrix();
 		break;
 	case ORTHOGRAPHIC:
@@ -261,9 +264,6 @@ void Renderer::setProjectionMode(Renderer::ProjectionMode mode)
 
 void Renderer::onAbort()
 {
-	// Release the car object (call destructor if no one else is using it
-	this->car.reset();
-
 }
 
 

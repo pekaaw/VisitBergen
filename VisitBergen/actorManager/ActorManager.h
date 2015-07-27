@@ -29,4 +29,5 @@ public:
 	explicit ActorManager();
 
 	int createActor(const std::string actorPath);
+	std::shared_ptr<Actor> getActor(const std::string actorName);
 };

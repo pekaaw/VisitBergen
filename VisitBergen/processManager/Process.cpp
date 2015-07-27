@@ -48,7 +48,7 @@ void Process::attachChild(std::shared_ptr<Process> child)
 	}
 }
 
-inline void Process::pause(void)
+void Process::pause(void)
 {
 	if (this->state == Process::RUNNING)
 	{
@@ -56,7 +56,7 @@ inline void Process::pause(void)
 	}
 }
 
-inline void Process::unPause(void)
+void Process::unPause(void)
 {
 	if (this->state == Process::PAUSED)
 	{

@@ -59,6 +59,7 @@ private:
 	ShaderFactory shaderFactory;
 
 	std::shared_ptr<Camera> camera;
+	float lightRotation;
 
 	bool usePerspectiveMode;
 	ProjectionMode currentProjectionMode;
@@ -74,9 +75,6 @@ private:
 
 	// Map with MeshComponents
 	std::map<std::string, std::shared_ptr<RenderableInterface>> renderables;
-
-	/* test with mesh */
-	std::shared_ptr<ContainerOBJ> car;
 
 	// A singleton instance
 	static std::shared_ptr<Renderer> instance;

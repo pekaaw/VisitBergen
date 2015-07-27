@@ -1,11 +1,14 @@
-<Actor type="Car" resource="actors\car.xml">
+<Actor type="Teddy" resource="actors\car.xml">
 
   <TransformComponent>
-    <Position x="0" y="0" z="0" />
+    <Position x="-200" y="5" z="0" />
+    <Scaling>10</Scaling>
   </TransformComponent>
 
   <MeshComponent>
     <Model format="obj">assets\\teddy.obj</Model>
+    <ShaderProgram>toonShading</ShaderProgram>
+    <!--<ShaderProgram>phongLighting</ShaderProgram>-->
   </MeshComponent>
 
 </Actor>

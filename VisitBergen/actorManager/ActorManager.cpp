@@ -2,6 +2,7 @@
 
 #include "../components/MeshComponent.h"
 #include "../components/RenderComponent.h"
+#include "../components/SkyBoxComponent.h"
 #include "../components/TransformComponent.h"
 
 ActorManager::ActorManager() : 
@@ -11,6 +12,7 @@ ActorManager::ActorManager() :
 	this->componentFactory.registerType<MeshComponent>(MeshComponent::componentName);
 	this->componentFactory.registerType<RenderComponent>(RenderComponent::componentName);
 	this->componentFactory.registerType<TransformComponent>(TransformComponent::componentName);
+	this->componentFactory.registerType<SkyBoxComponent>(SkyBoxComponent::componentName);
 }
 
 int ActorManager::createActor(const std::string actorPath)
@@ -95,11 +97,24 @@ int ActorManager::createActor(XMLElement* actorDescriptionRoot)
 	delete this->actorXML;
 	this->actorXML = nullptr;
 
+	// The actor is successfully created. Store it in actorManager
+	this->actorList.push_back(actor);
+
 	return 0;
 }
 
+std::shared_ptr<Actor> ActorManager::getActor(const std::string actorName)
+{
+	for (auto actorPtr : this->actorList)
+	{
+		if (actorPtr->getActorName() == actorName)
+		{
+			return actorPtr;
+		}
+	}
 
-
+	return nullptr;
+}
 
 
 const int ActorManager::getNextActorID()

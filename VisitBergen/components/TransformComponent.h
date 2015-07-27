@@ -35,6 +35,7 @@ public:
 	static const char* componentName;
 
 	const glm::mat4& getTransform() const;
+	void setTransform(glm::mat4& matrix);
 
 	//glm::mat4 bodyTransform;
 	//glm::mat4 worldTransform;

@@ -1,8 +1,13 @@
-newmtl Default_Smoothing
-Ka 0.1 0.1 0.1
-Kd 1.0 1.0 1.0
-Ks 0.5 0 0
-Ni 1
-Ns 400
-Tf 1 1 1
-d 1
+#
+# Wavefront material file
+# Converted by Meshlab Group
+#
+
+newmtl material_0
+Ka 0.200000 0.200000 0.200000
+Kd 0.752941 0.752941 0.752941
+Ks 1.000000 1.000000 1.000000
+Tr 1.000000
+illum 2
+Ns 0.000000
+

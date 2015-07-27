@@ -36,30 +36,34 @@ struct GLState
 	GLState()
 	{
 		this->material.shininess = 1.0f;
-		this->material.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
-		this->material.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-		this->material.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->material.ambient = glm::vec3(0.0f, 1.0f, 0.0f);
+		this->material.diffuse = glm::vec3(0.0f, 1.0f, 0.0f);
+		this->material.specular = glm::vec3(0.0f, 1.0f, 0.0f);
 		
 		this->headLight.position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f); // not used
 		this->headLight.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
-		this->headLight.diffuse = glm::vec3(0.0f, 1.0f, 0.0f);
-		this->headLight.specular = glm::vec3(0.0f, 1.0f, 0.0f);
-		this->headLight.intensities = glm::vec3(0.1f, 0.5f, 0.9f);	// vec3(ambient-, diffuse-, specular-) intensity
+		this->headLight.diffuse = glm::vec3(1.0f, 0.77f, 0.16f);
+		this->headLight.specular = glm::vec3(1.0f, 0.77f, 0.16f);
+		this->headLight.intensities = glm::vec3(0.0f, 0.3f, 0.9f);	// vec3(ambient-, diffuse-, specular-) intensity
 
-		this->directionalLight.position = glm::vec4(10.0f, 3.0f, -3.0f, 0.0f);
+		this->directionalLight.position = glm::vec4(1000.0f, 400.0f, -3.0f, 0.0f);
 		this->directionalLight.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
-		this->directionalLight.diffuse = glm::vec3(0.0f, 0.0f, 1.0f);
+		this->directionalLight.diffuse = glm::vec3(0.25f, 0.89f, 1.0f);
 		this->directionalLight.specular = glm::vec3(0.0f, 0.0f, 1.0f);
-		this->directionalLight.intensities = glm::vec3(0.1f, 0.8f, 0.9f);	// vec3(ambient-, diffuse-, specular-) intensity
+		this->directionalLight.intensities = glm::vec3(0.0f, 0.8f, 0.9f);	// vec3(ambient-, diffuse-, specular-) intensity
 
-		this->movingLight.position = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+		this->movingLight.position = glm::vec4(200.0f, 300.0f, 0.0f, 1.0f);
+		this->movingLight.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+		this->movingLight.diffuse = glm::vec3(0.0f, 0.0f, 0.0f);
+		this->movingLight.specular = glm::vec3(0.3f, 0.252f, 0.0f);
 		//this->movingLight.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
 		//this->movingLight.diffuse = glm::vec3(1.0f, 0.84f, 0.0f);
 		//this->movingLight.specular = glm::vec3(1.0f, 0.84f, 0.0f);
-		this->movingLight.ambient = glm::vec3(1.0f, 0.0f, 0.0f);
-		this->movingLight.diffuse = glm::vec3(1.0f, 0.0f, 0.0f);
-		this->movingLight.specular = glm::vec3(1.0f, 0.0f, 0.0f);
-		this->movingLight.lightRadius = 0.7f;
-		this->movingLight.litRadius = 1.0f; // must not be 0 when used as point light
+		//this->movingLight.ambient = glm::vec3(0.16f, 0.16f, 0.0f);
+		//this->movingLight.diffuse = glm::vec3(0.16f, 0.16f, 0.0f);
+		//this->movingLight.specular = glm::vec3(0.16f, 0.16f, 0.0f);
+		this->movingLight.intensities = glm::vec3(0.0f, 1.0f, 0.5f);
+		this->movingLight.lightRadius = 5.0f;
+		this->movingLight.litRadius = 500.0f; // must not be 0 when used as point light
 	}
 };

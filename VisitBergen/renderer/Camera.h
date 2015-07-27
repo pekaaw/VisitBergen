@@ -11,6 +11,12 @@ class Camera
 	glm::mat4 viewMatrix;
 	glm::mat4 projectionMatrix;
 
+	float yaw;
+	float pitch;
+	float roll;
+
+	const float angle2rad = glm::pi<float>() / 180.0f;
+
 public:
 	Camera()
 	{
@@ -54,5 +60,10 @@ public:
 	const glm::mat4 getProjectionMatrix() const
 	{
 		return this->projectionMatrix;
+	}
+
+	void updateYawPitchRoll()
+	{
+
 	}
 };

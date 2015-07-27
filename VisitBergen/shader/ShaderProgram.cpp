@@ -9,6 +9,7 @@ void ShaderProgram::initTextureUniforms()
 {
 	initUniform("NoTexture");
 	initUniform("TextureSampler");
+	initUniform("WaveTime");
 }
 
 void ShaderProgram::initMaterialUniforms()

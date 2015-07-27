@@ -1,0 +1,15 @@
+<Actor type="Cow" resource="actors\cow.xml">
+
+  <TransformComponent>
+    <Position x="-4" y="0.1" z="-5" />
+    <YawPitchRoll yaw="0.15" />
+    <Scaling>2</Scaling>
+  </TransformComponent>
+
+  <MeshComponent>
+    <Model format="obj">assets\\cow.obj</Model>
+    <!--<ShaderProgram>toonShading</ShaderProgram>-->
+    <ShaderProgram>phongLighting</ShaderProgram>
+  </MeshComponent>
+
+</Actor>

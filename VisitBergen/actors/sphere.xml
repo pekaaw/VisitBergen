@@ -1,0 +1,15 @@
+<Actor type="Sphere" resource="actors\car.xml">
+
+  <TransformComponent>
+    <Position x="10" y="1" z="8" />
+    <Scaling>2</Scaling>
+  </TransformComponent>
+
+  <MeshComponent>
+    <Model format="obj">assets\\sphere\\sphere.obj</Model>
+    <ShaderProgram>phongLighting</ShaderProgram>
+    <!--<AverageNormals>true</AverageNormals>-->
+    <!--<ShaderProgram>phongLighting</ShaderProgram>-->
+  </MeshComponent>
+
+</Actor>

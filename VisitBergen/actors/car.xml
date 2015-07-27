@@ -1,7 +1,9 @@
 <Actor type="Car" resource="actors\car.xml">
 
   <TransformComponent>
-    <Position x="0" y="0" z="0" />
+    <Position x="4" y="1" z="-3" />
+    <YawPitchRoll yaw="60" />
+    <Scaling>5</Scaling>
   </TransformComponent>
 
   <MeshComponent>
